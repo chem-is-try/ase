@@ -183,7 +183,7 @@ def init_momenta(
     temp = units.kB * temperature_K  # K -> eV
     masses = atoms.get_masses()
     momenta = _maxwellboltzmanndistribution(masses, temp, comm=comm, rng=rng)
-    atoms.set_momenta(momenta)
+    atoms.set_momenta(momenta, apply_constraint=True)
     if force_temp:
         force_temperature(atoms, temperature=temp, unit='eV')
 
