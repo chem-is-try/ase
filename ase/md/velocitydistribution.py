@@ -14,6 +14,7 @@ import numpy as np
 from ase import Atoms, units
 from ase.md.md import process_temperature
 from ase.parallel import DummyMPI, world
+from ase.utils import deprecated
 
 # define a ``zero'' temperature to avoid divisions by zero
 eps_temp = 1e-12
@@ -94,6 +95,7 @@ def _maxwellboltzmanndistribution(masses, temp, comm=world, rng=None):
     return momenta
 
 
+@deprecated('Use init_momenta', DeprecationWarning)
 def MaxwellBoltzmannDistribution(
     atoms: Atoms,
     *,
@@ -107,6 +109,9 @@ def MaxwellBoltzmannDistribution(
 
     .. versionremoved:: 3.28.0
         The ``temp`` argument is removed. Use ``temperature_K`` instead.
+
+    .. deprecated:: 3.28.0
+        Use :func:`init_momenta` instead.
 
     Parameters
     ----------
@@ -152,6 +157,29 @@ def MaxwellBoltzmannDistribution(
         )
         warnings.warn(msg, FutureWarning)
         comm = DummyMPI()
+    init_momenta(
+        atoms,
+        temperature_K,
+        comm=comm,
+        force_temp=force_temp,
+        rng=rng,
+    )
+
+
+def init_momenta(
+    atoms: Atoms,
+    temperature_K: float,
+    *,
+    comm=world,
+    force_temp: bool = False,
+    rng=None,
+) -> None:
+    """Set the atomic momenta to a Maxwell-Boltzmann distribution.
+
+    See :func:`MaxwellBoltzmannDistribution` for details of parameters.
+
+    .. versionadded:: 3.28.0
+    """
     temp = units.kB * temperature_K  # K -> eV
     masses = atoms.get_masses()
     momenta = _maxwellboltzmanndistribution(masses, temp, comm=comm, rng=rng)
