@@ -5,14 +5,13 @@ from ase import Atoms, units
 from ase.build import bulk
 from ase.calculators.emt import EMT
 from ase.io import Trajectory
-from ase.md import VelocityVerlet
-from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
+from ase.md import VelocityVerlet, init_momenta
 
 
 @pytest.fixture(name="atoms")
 def fixture_atoms():
     atoms = bulk("Au") * 2
-    MaxwellBoltzmannDistribution(atoms, temperature_K=100.0)
+    init_momenta(atoms, 100.0)
     atoms.calc = EMT()
     return atoms
 
