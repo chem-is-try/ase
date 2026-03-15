@@ -44,7 +44,7 @@ class CalculationResults:
 
     def __init__(
         self,
-        metadata: dict = None,
+        metadata: dict | None = None,
         properties: dict | Properties | None = None,
     ) -> None:
         self._metadata = {}
