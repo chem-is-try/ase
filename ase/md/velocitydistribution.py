@@ -96,9 +96,8 @@ def _maxwellboltzmanndistribution(masses, temp, comm=world, rng=None):
 
 def MaxwellBoltzmannDistribution(
     atoms: Atoms,
-    temp: float | None = None,
     *,
-    temperature_K: float | None = None,
+    temperature_K: float,
     comm=world,
     communicator=None,
     force_temp: bool = False,
@@ -106,13 +105,13 @@ def MaxwellBoltzmannDistribution(
 ):
     """Set the atomic momenta to a Maxwell-Boltzmann distribution.
 
+    .. versionremoved:: 3.28.0
+        The ``temp`` argument is removed. Use ``temperature_K`` instead.
+
     Parameters
     ----------
     atoms: Atoms object
         The atoms.  Their momenta will be modified.
-
-    temp: float (deprecated)
-        The temperature in eV.  Deprecated, use ``temperature_K`` instead.
 
     temperature_K: float
         The temperature in Kelvin.
@@ -153,7 +152,7 @@ def MaxwellBoltzmannDistribution(
         )
         warnings.warn(msg, FutureWarning)
         comm = DummyMPI()
-    temp = units.kB * process_temperature(temp, temperature_K, 'eV')
+    temp = units.kB * temperature_K  # K -> eV
     masses = atoms.get_masses()
     momenta = _maxwellboltzmanndistribution(masses, temp, comm=comm, rng=rng)
     atoms.set_momenta(momenta)
