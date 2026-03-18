@@ -123,8 +123,8 @@ The symbols are the same as used in the plotting data function.
 
 .. _gui configuration:
 
-Defaults
---------
+Configuring the GUI
+-------------------
 
 Certain defaults for the GUI can be set using a file ``~/.ase/gui.py``.
 If the file exists, it is executed after initializing the variables and
@@ -142,8 +142,8 @@ dictionary, and atoms can be referred to using atomic symbols.
   gui_default_settings['gui_graphs_string'] = "i, e - min(E), fmax"
   gui_default_settings['covalent_radii'] = [[29,1.6]]  # or {29: 1.6}
 
-To see a list of all settings that can be changed, along with their stock
-values, do
+To see a list of all settings that can be changed, along with their
+default values, do:
 
 ::
 
@@ -156,18 +156,23 @@ values, do
 High contrast settings
 ----------------------
 
-In revision 2600 or later, it is possible to change the foreground and
-background colors used to draw the atoms, for instance to draw white
-graphics on a black background. This can be done in ``~/.ase/gui.py``.
+It is possible to change the foreground and background colors used to draw the
+atoms, for instance to draw white graphics on a black background. This can be
+done in ``~/.ase/gui.py``:
 
 ::
 
   gui_default_settings['gui_foreground_color'] = '#ffffff' #white
   gui_default_settings['gui_background_color'] = '#000000' #black
 
-To change the color scheme of graphs it is necessary to change the
-default behaviour of Matplotlib in a similar way by using a file
-``~/.matplotlib/matplotlibrc``.
+The color scheme of the windows themselves (i.e. menus, buttons
+and text etc.) can be changed by choosing a different desktop theme. In
+Ubuntu it is possible to get white on a dark background by selecting the
+theme HighContrastInverse under Appearances in the system settings dialog.
+
+To change the color scheme of graphs, configure the default behaviour of
+Matplotlib in a similar way by using a file ``~/.matplotlib/matplotlibrc``.
+For example:
 
 ::
 
@@ -182,8 +187,3 @@ default behaviour of Matplotlib in a similar way by using a file
   grid.color       : white
   figure.facecolor : 0.1
   figure.edgecolor : black
-
-Finally, the color scheme of the windows themselves (i.e. menus, buttons
-and text etc.) can be changed by choosing a different desktop theme. In
-Ubuntu it is possible to get white on a dark background by selecting the
-theme HighContrastInverse under Appearances in the system settings dialog.
