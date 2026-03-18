@@ -43,7 +43,7 @@ Selecting part of a trajectory
 
 A Python-like syntax for selecting a subset of configurations can be
 used.  Instead of the Python syntax ``list[start:stop:step]``, you use
-:file:`filaname@start:stop:step`::
+:file:`filename@start:stop:step`::
 
   $ ase gui x.traj@0:10:1  # first 10 images
   $ ase gui x.traj@0:10    # first 10 images
@@ -120,6 +120,8 @@ function of the distance between atom 0 and 5::
 
 The symbols are the same as used in the plotting data function.
 
+
+.. _gui configuration:
 
 Defaults
 --------
