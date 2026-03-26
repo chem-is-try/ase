@@ -46,5 +46,6 @@
 Bugfixes
 --------
 
-- Fixed a bug when reading VASP output files. Now able to handle when VASP writes POTCAR hashes to the CONTCAR in place of element symbols.
-
+- Fix :func:`~ase.io.vasp.read_vasp_configuration` so that it can parse the VASP-POSCAR
+  format with POTCAR hashes in place of element symbols like ``Na_pv/6a2f546d``
+  (:mr:`3968`)
