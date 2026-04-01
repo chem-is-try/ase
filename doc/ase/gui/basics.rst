@@ -11,7 +11,7 @@ understands, e.g.:
 
   $ ase gui N2Fe110-path.traj
 
-The :ref:`ase-gui` program can also be launched directly from a Python
+The :ref:`ase-gui` can also be launched directly from a Python
 script or interactive session using :func:`ase.visualize.view`.
 
 >>> from ase.visualize import view
@@ -26,12 +26,6 @@ The methods above open and modify a copy of the Atoms object. In order
 to make direct changes to your atoms, use:
 
 >>> atoms.edit()
-
-Use :meth:`ase.gui.gui.GUI.repeat_poll` to interact programmatically
-with the GUI, for example to monitor an ongoing calculation
-and update the display on the fly.
-
-.. automethod:: ase.gui.gui.GUI.repeat_poll
 
 
 Basic controls
@@ -176,3 +170,13 @@ For example:
   grid.color       : white
   figure.facecolor : 0.1
   figure.edgecolor : black
+
+
+Polling the GUI
+---------------
+
+Use :meth:`ase.gui.gui.GUI.repeat_poll` to interact programmatically
+with the GUI, for example to monitor an ongoing calculation
+and update the display on the fly.
+
+.. automethod:: ase.gui.gui.GUI.repeat_poll
