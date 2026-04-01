@@ -89,18 +89,6 @@ the ``-n`` or ``--image-number`` option::
   Type :command:`ase gui -h` for a description of all command line options.
 
 
-Writing files
--------------
-
-::
-
-  $ ase gui -n -1 a*.traj -o new.traj
-
-Possible formats are: ``traj``, ``xyz``, ``cube``, ``pdb``, ``eps``,
-``png``, and ``pov``.  For details, see the :mod:`~ase.io` module
-documentation.
-
-
 NEB calculations
 ----------------
 
