@@ -1,9 +1,41 @@
-=======================================
-ase-gui basics and command line options
-=======================================
+===================================
+GUI basics and command line options
+===================================
 
-General use
------------
+ASE has a built-in graphical user interface (GUI) which can be invoked
+from a terminal with the ``ase gui`` subcommand and can read all the
+same file formats that the ASE's :func:`~ase.io.read` function
+understands, e.g.:
+
+::
+
+  $ ase gui N2Fe110-path.traj
+
+The :ref:`ase-gui` program can also be launched directly from a Python
+script or interactive session using :func:`ase.visualize.view`.
+
+>>> from ase.visualize import view
+>>> atoms = ...
+>>> view(atoms)
+
+or
+
+>>> view(atoms, repeat=(3, 3, 2))
+
+The methods above open and modify a copy of the Atoms object. In order
+to make direct changes to your atoms, use:
+
+>>> atoms.edit()
+
+Use :meth:`ase.gui.gui.GUI.repeat_poll` to interact programmatically
+with the GUI, for example to monitor an ongoing calculation
+and update the display on the fly.
+
+.. automethod:: ase.gui.gui.GUI.repeat_poll
+
+
+Basic controls
+--------------
 
 Visualizing a system with ASE's GUI is straight-forward using a regular
 mouse. The scroll function allows to change the magnification, the
@@ -11,35 +43,28 @@ left mouse button selects atoms, the right mouse button allows to
 rotate, and the middle button allows to translate the system on the
 screen.
 
-Depending on the number of selected atoms, :ref:`ase-gui` automatically measures
-different quantities:
+Depending on how many atoms are selected, :ref:`ase-gui` automatically
+measures one of several quantities:
 
 ================================= ======================================
 Selection                         measurement
 ================================= ======================================
-single atom                       xyz position and atomic symbol
-two atoms                         interatomic distance and symbols
-three atoms                       all three internal angles and
+single atom                       position (x,y,z) and chemical symbol
+                                  of the atom
+two atoms                         interatomic distance and chemical
                                   symbols
-four atoms, selected sequentially Measures the dihedral angle,
-                                  e.g. the angle between bonds 12 and 34
-more than four atoms              chemical composition of selection.
+three atoms                       internal angles between the atoms and
+                                  chemical symbols
+four atoms                        dihedral angle, i.e. the angle between
+                                  bonds 1-2 and 3-4, and chemical
+                                  symbols
+more than four atoms              chemical composition (formula) of
+                                  selection
 ================================= ======================================
 
 
-Files
------
-
-The :ref:`ase-gui` program can read all the file formats the ASE's
-:func:`~ase.io.read` function can understand.
-
-::
-
-  $ ase gui N2Fe110-path.traj
-
-
-Selecting part of a trajectory
-------------------------------
+Selecting a part of a trajectory
+--------------------------------
 
 A Python-like syntax for selecting a subset of configurations can be
 used.  Instead of the Python syntax ``list[start:stop:step]``, you use
@@ -75,30 +100,6 @@ Possible formats are: ``traj``, ``xyz``, ``cube``, ``pdb``, ``eps``,
 ``png``, and ``pov``.  For details, see the :mod:`~ase.io` module
 documentation.
 
-
-Interactive use
----------------
-
-The :ref:`ase-gui` program can also be launched directly from a Python
-script or interactive session:
-
->>> from ase import *
->>> atoms = ...
->>> view(atoms)
-
-or
-
->>> view(atoms, repeat=(3, 3, 2))
-
-or, to keep changes to your atoms:
-
->>> atoms.edit()
-
-Use :meth:`ase.gui.gui.GUI.repeat_poll` to interact programmatically
-with the GUI, for example to monitor an ongoing calculation
-and update the display on the fly.
-
-.. automethod:: ase.gui.gui.GUI.repeat_poll
 
 NEB calculations
 ----------------
