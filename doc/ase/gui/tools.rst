@@ -49,6 +49,7 @@ relaxations):
   i, e-min(E), fmax
 
 
+.. _gui-tools movie:
 Movie
 -----
 
@@ -94,8 +95,8 @@ For this particular application it might be a good idea to use a white
 background instead of the default transparent option.
 
 
-Move/Rotate selected atoms
---------------------------
+Move / Rotate selected atoms
+----------------------------
 :kbd:`ctrl+M` (Move) / :kbd:`ctrl+R` (Rotate)
 
 Allows selected atoms to be manipulated using the arrow keys. The default
