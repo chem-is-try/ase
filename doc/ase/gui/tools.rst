@@ -40,7 +40,7 @@ T                temperature (requires velocity)
 
 
 Plotting data from the command line
-...................................
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Plot the energy relative to the energy of the first image as a
 function of the distance between atom 0 and 5::
 

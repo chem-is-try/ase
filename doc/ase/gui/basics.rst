@@ -5,18 +5,16 @@ GUI basics and command line options
 ASE has a built-in graphical user interface (GUI) which can be invoked
 from a terminal with the :command:`ase gui` subcommand and can read all
 the same file formats that the ASE's :func:`~ase.io.read` function
-understands, e.g.:
+understands:
 
 ::
 
   $ ase gui N2Fe110-path.traj
 
-.. tip::
-
-  Type :command:`ase gui -h` for a description of all command line options.
+Type :command:`ase gui -h` for a description of all command line options.
 
 Alternatively, the GUI can be launched from a Python script or an
-interactive session using :func:`ase.visualize.view` (see also:
+interactive session by using :func:`ase.visualize.view` (see also:
 :ref:`polling`). For example, to view an Atoms object in the GUI *via*
 Python, do:
 
@@ -28,8 +26,9 @@ Python, do:
 
 .. >>> view(atoms, repeat=(3, 3, 2))
 
-The methods above open and modify a copy of the Atoms object. In order
-to make direct changes to your atoms, use:
+The methods above open and modify a copy of the Atoms object which can
+then be saved to a file. In order to make direct changes to the atoms that
+are open in a Python session, use:
 
 >>> atoms.edit()
 
@@ -37,8 +36,9 @@ to make direct changes to your atoms, use:
 Selecting a part of a trajectory
 ................................
 
-Python-like indexing can be used to open a subset of configurations.
-However, instead of the square brackets, use
+When opening files that contain multiple atomic structures, a subset of
+the configurations can be selected using Python-like indexing
+separated with the `@` character, i.e.
 :file:`filename@{start}:{stop}:{step}`::
 
   $ ase gui x.traj@0:10:1  # first 10 images
@@ -49,27 +49,28 @@ However, instead of the square brackets, use
   $ ase gui x.traj@-1      # last image
   $ ase gui x.traj@::2     # every second image
 
-If you want to select the same range from many files, the you can use
-the ``-n`` or ``--image-number`` option::
+To simultaneously select the same range from many files, use the ``-n``
+or ``--image-number`` option::
 
-  $ ase gui -n -1 *.traj   # last image from all files
-  $ ase gui -n 0 *.traj    # first image from all files
+  $ ase gui -n -1 *.traj   # last image from all .traj files
+  $ ase gui -n 0 *.traj    # first image from all .traj files
 
 
 Basic controls
 --------------
 
-Visualizing a system with ASE's GUI is straight-forward using mouse and
-keyboard. The primary (left) mouse button is used to select/unselect
-atoms. Several atoms can be selected by holding down the :kbd:`ctrl`
-modifier key. Clicking and dragging with the secondary mouse button
-manipulates the view, rotating by default and panning around if the
-:kbd:`shift` modifier is pressed. Scrolling with the mouse wheel touchpad
-allows zooming.
+Analyzing a system with ASE's GUI is straightforward. The primary (left)
+mouse button is used to select/unselect atoms and several atoms can be
+selected by holding down the :kbd:`ctrl` modifier key. Clicking and
+dragging with the secondary mouse button manipulates the view, rotating by
+default or panning around when the :kbd:`shift` modifier is held. Scrolling
+with the mouse wheel or touchpad zooms the view in and out. The
+:ref:`gui-view` menu contains additional options for efficient view
+manipulation.
 
-Depending on how many atoms are selected, the :ref:`ase-gui`
-automatically displays certain information in the status bar on the
-bottom left of the window:
+Depending on how many atoms are selected, the :ref:`ase-gui` automatically
+displays certain information in the status bar on the bottom left of the
+window:
 
 ================================= ======================================
 Selection                         Display
@@ -86,6 +87,10 @@ four atoms                        dihedral angle, i.e. the angle between
 more than four atoms              chemical composition (formula) of
                                   selection
 ================================= ======================================
+
+Explore the :ref:`gui-edit` menu to find ways to manipulate the selected
+atoms as well as their corresponding keyboard shortcuts.
+
 
 
 .. _gui configuration:
@@ -121,7 +126,7 @@ default values, do:
 .. _high contrast:
 
 High contrast settings
-......................
+^^^^^^^^^^^^^^^^^^^^^^
 
 It is possible to change the foreground and background colors used to draw the
 atoms, for instance to draw white graphics on a black background. This can be
