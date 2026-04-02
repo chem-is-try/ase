@@ -39,6 +39,17 @@ T                temperature (requires velocity)
 ================ ==================================================
 
 
+Plotting data from the command line
+...................................
+Plot the energy relative to the energy of the first image as a
+function of the distance between atom 0 and 5::
+
+  $ ase gui -g "d(0,5),e-E[0]" x.traj
+  $ ase gui -t -g "d(0,5),e-E[0]" x.traj > x.dat  # No GUI, write data to stdout
+
+The symbols are the same as above.
+
+
 Movie
 -----
 
@@ -88,3 +99,14 @@ Allows selected atoms to be moved using the arrow keys. The direction
 is always parallel to the plane of the screen. Two possible movements
 are available: Just pressing the arrow keys will move by 0.1
 Angstrom, ``shift`` + arrow keys will move by 0.01 Angstrom.
+
+
+NEB plot
+--------
+
+Assuming you have opened a series of images corresponding to a NEB
+trajectory, use :menuselection:`Tools --> NEB` to plot the energy barrier.
+
+.. ::
+
+..   $ ase gui --interpolate 3 initial.xyz final.xyz -o interpolated_path.traj

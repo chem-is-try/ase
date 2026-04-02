@@ -88,27 +88,6 @@ more than four atoms              chemical composition (formula) of
 ================================= ======================================
 
 
-NEB calculations
-----------------
-
-Use :menuselection:`Tools --> NEB` to plot energy barrier.
-
-::
-
-  $ ase gui --interpolate 3 initial.xyz final.xyz -o interpolated_path.traj
-
-
-Plotting data from the command line
------------------------------------
-Plot the energy relative to the energy of the first image as a
-function of the distance between atom 0 and 5::
-
-  $ ase gui -g "d(0,5),e-E[0]" x.traj
-  $ ase gui -t -g "d(0,5),e-E[0]" x.traj > x.dat  # No GUI, write data to stdout
-
-The symbols are the same as used in the plotting data function.
-
-
 .. _gui configuration:
 
 Configuring the GUI
