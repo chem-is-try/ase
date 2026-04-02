@@ -52,22 +52,25 @@ relaxations):
 Movie
 -----
 
-Allows to play the current trajectory as a movie using a number of
-different settings. Default duration is 5 s.
+For navigating between images when several of them are open at the same
+time or for animating said navigation. Allows one to play the current
+trajectory as a movie using a number of different settings such as the
+frame rate. By default, the frame rate and number of structures skipped is
+adjusted to cycle through all images in ca. 5 s.
 
 
 Constraints
 -----------
 
-Allows to set (or remove) constraints based on the currently selected atoms.
+For setting (or removing) the :class:`ase.constraints.FixAtoms` to/from the
+currently selected atoms. These constraints will be then be saved to a file
+with the structure if the chosen file type allows it.
 
 
 Render scene
 ------------
 
-(Currently disabled)
-
-Graphical interface to the ASE povray interface, ideally it requires
+Graphical interface to the ASE povray interface. Ideally it requires
 that povray is installed on your computer to function, but it also can
 be used just to export the complete set of povray files.
 
