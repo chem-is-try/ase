@@ -3,24 +3,30 @@ GUI basics and command line options
 ===================================
 
 ASE has a built-in graphical user interface (GUI) which can be invoked
-from a terminal with the ``ase gui`` subcommand and can read all the
-same file formats that the ASE's :func:`~ase.io.read` function
+from a terminal with the :command:`ase gui` subcommand and can read all
+the same file formats that the ASE's :func:`~ase.io.read` function
 understands, e.g.:
 
 ::
 
   $ ase gui N2Fe110-path.traj
 
-The :ref:`ase-gui` can also be launched directly from a Python
-script or interactive session using :func:`ase.visualize.view`.
+.. tip::
+
+  Type :command:`ase gui -h` for a description of all command line options.
+
+Alternatively, the GUI can be launched from a Python script or an
+interactive session using :func:`ase.visualize.view` (see also:
+:ref:`polling`). For example, to view an Atoms object in the GUI *via*
+Python, do:
 
 >>> from ase.visualize import view
 >>> atoms = ...
 >>> view(atoms)
 
-or
+.. or
 
->>> view(atoms, repeat=(3, 3, 2))
+.. >>> view(atoms, repeat=(3, 3, 2))
 
 The methods above open and modify a copy of the Atoms object. In order
 to make direct changes to your atoms, use:
@@ -28,41 +34,12 @@ to make direct changes to your atoms, use:
 >>> atoms.edit()
 
 
-Basic controls
---------------
-
-Visualizing a system with ASE's GUI is straight-forward using a regular
-mouse. The scroll function allows to change the magnification, the
-left mouse button selects atoms, the right mouse button allows to
-rotate, and the middle button allows to translate the system on the
-screen.
-
-Depending on how many atoms are selected, :ref:`ase-gui` automatically
-measures one of several quantities:
-
-================================= ======================================
-Selection                         measurement
-================================= ======================================
-single atom                       position (x,y,z) and chemical symbol
-                                  of the atom
-two atoms                         interatomic distance and chemical
-                                  symbols
-three atoms                       internal angles between the atoms and
-                                  chemical symbols
-four atoms                        dihedral angle, i.e. the angle between
-                                  bonds 1-2 and 3-4, and chemical
-                                  symbols
-more than four atoms              chemical composition (formula) of
-                                  selection
-================================= ======================================
-
-
 Selecting a part of a trajectory
---------------------------------
+................................
 
-A Python-like syntax for selecting a subset of configurations can be
-used.  Instead of the Python syntax ``list[start:stop:step]``, you use
-:file:`filename@start:stop:step`::
+Python-like indexing can be used to open a subset of configurations.
+However, instead of the square brackets, use
+:file:`filename@{start}:{stop}:{step}`::
 
   $ ase gui x.traj@0:10:1  # first 10 images
   $ ase gui x.traj@0:10    # first 10 images
@@ -78,9 +55,37 @@ the ``-n`` or ``--image-number`` option::
   $ ase gui -n -1 *.traj   # last image from all files
   $ ase gui -n 0 *.traj    # first image from all files
 
-.. tip::
 
-  Type :command:`ase gui -h` for a description of all command line options.
+Basic controls
+--------------
+
+Visualizing a system with ASE's GUI is straight-forward using mouse and
+keyboard. The primary (left) mouse button is used to select/unselect
+atoms. Several atoms can be selected by holding down the :kbd:`ctrl`
+modifier key. Clicking and dragging with the secondary mouse button
+manipulates the view, rotating by default and panning around if the
+:kbd:`shift` modifier is pressed. Scrolling with the mouse wheel touchpad
+allows zooming.
+
+Depending on how many atoms are selected, the :ref:`ase-gui`
+automatically displays certain information in the status bar on the
+bottom left of the window:
+
+================================= ======================================
+Selection                         Display
+================================= ======================================
+single atom                       position (x,y,z) and chemical symbol
+                                  of the atom
+two atoms                         interatomic distance and chemical
+                                  symbols
+three atoms                       internal angles between the atoms and
+                                  chemical symbols
+four atoms                        dihedral angle, i.e. the angle between
+                                  bonds 1-2 and 3-4, and chemical
+                                  symbols
+more than four atoms              chemical composition (formula) of
+                                  selection
+================================= ======================================
 
 
 NEB calculations
@@ -137,7 +142,7 @@ default values, do:
 .. _high contrast:
 
 High contrast settings
-----------------------
+......................
 
 It is possible to change the foreground and background colors used to draw the
 atoms, for instance to draw white graphics on a black background. This can be
@@ -171,6 +176,8 @@ For example:
   figure.facecolor : 0.1
   figure.edgecolor : black
 
+
+.. _polling:
 
 Polling the GUI
 ---------------
