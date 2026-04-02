@@ -7,7 +7,7 @@
 .. _ase-gui:
 
 ========================
-Graphical User Interface
+Graphical user interface
 ========================
 
 The graphical user-interface allows users to visualize, manipulate,
