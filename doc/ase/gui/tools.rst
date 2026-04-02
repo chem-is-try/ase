@@ -2,20 +2,17 @@
 Tools
 =====
 
+.. _gui-tools graphs:
 Graphs
 ------
 
-Allows to graph different quantities for a given trajectory. A 'save' button
-also gives the opportunity to save the data to file.
+For graphing different quantities for a given trajectory. ASE uses
+matplotlib as a backend, allowing some manipulation of the generated plot
+and for the plot to be saved to a file.
 
-This example plots the maximal force for each image i and could help in
-investigating the convergence properties for relaxations:
-
-::
-
-  i, e-min(E), fmax
-
-These are the symbols that can be used:
+The :guilabel:`Graphs` window requires an instruction string that controls
+what is plotted. The following expressions can be used to create the 
+instructions:
 
 ================ ==================================================
  Symbol          Interpretation
@@ -33,21 +30,23 @@ F[n,0-2]         force on atom number n
 M[n]             magnetic moment of atom number n
 A[0-2,0-2]       unit-cell basis vectors
 s                path length
-a(n1,n2,n3)      tangle between atoms n1, n2 and n3, centered on n2
+a(n1,n2,n3)      angle between atoms n1, n2 and n3, centered on n2
 dih(n1,n2,n3,n4) dihedral angle between n1, n2, n3, and n4
 T                temperature (requires velocity)
 ================ ==================================================
 
+Variables should be separated by commas. The window presents two
+:guilabel:`Plot` buttons. The first (``x, y1, y2, ...``) places the first
+variable in the list as the x-axis. The other (``y1, y2, ...``) plots all
+variables on the y-axis and uses the current image number as the x-axis.
 
-Plotting data from the command line
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Plot the energy relative to the energy of the first image as a
-function of the distance between atom 0 and 5::
+This example plots the energy and the maximal force for each image i (e.g.
+to help in investigating the convergence properties for geometry
+relaxations):
 
-  $ ase gui -g "d(0,5),e-E[0]" x.traj
-  $ ase gui -t -g "d(0,5),e-E[0]" x.traj > x.dat  # No GUI, write data to stdout
+::
 
-The symbols are the same as above.
+  i, e-min(E), fmax
 
 
 Movie

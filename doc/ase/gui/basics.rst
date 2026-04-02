@@ -92,6 +92,19 @@ Explore the :ref:`gui-edit` menu to find ways to manipulate the selected
 atoms as well as their corresponding keyboard shortcuts.
 
 
+Plotting data from the command line
+-----------------------------------
+It is possible to make plots using the data in trajectory files directly
+from the command line. For example, to plot the energy relative to the
+energy of the first image as a function of the distance between
+atoms 0 and 5::
+
+  $ ase gui -g "d(0,5),e-E[0]" x.traj
+  $ ase gui -t -g "d(0,5),e-E[0]" x.traj > x.dat  # No GUI, write data to stdout
+
+For instructions on creating valid graphing strings, refer to
+:ref:`gui-tools graphs`.
+
 
 .. _gui configuration:
 
