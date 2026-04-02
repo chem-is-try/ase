@@ -94,13 +94,17 @@ For this particular application it might be a good idea to use a white
 background instead of the default transparent option.
 
 
-Move atoms
-----------
+Move/Rotate selected atoms
+--------------------------
+:kbd:`ctrl+M` (Move) / :kbd:`ctrl+R` (Rotate)
 
-Allows selected atoms to be moved using the arrow keys. The direction
-is always parallel to the plane of the screen. Two possible movements
-are available: Just pressing the arrow keys will move by 0.1
-Angstrom, ``shift`` + arrow keys will move by 0.01 Angstrom.
+Allows selected atoms to be manipulated using the arrow keys. The default
+direction of movement is parallel to the plane of the screen. Holding down
+:kbd:`ctrl` will enable movement/rotation along the view axis instead.
+Furthermore, :kbd:`shift` + arrow keys will slow down the speed of the
+movement/roration by a factor of 10. It is also possible to move/rotate the
+selection using the mouse by holding down both :kbd:`shift` and the right
+mouse button.
 
 
 NEB plot
@@ -112,3 +116,24 @@ trajectory, use :menuselection:`Tools --> NEB` to plot the energy barrier.
 .. ::
 
 ..   $ ase gui --interpolate 3 initial.xyz final.xyz -o interpolated_path.traj
+
+
+Bulk modulus
+------------
+
+Interface to :func:`ase.eos.plot`
+
+
+Reciprocal space
+----------------
+
+For visualizing the irreducible Brillouin zone and band path in an
+interactive graph window.
+
+
+Wrap atoms
+----------
+:kbd:`ctrl+W`
+
+Brings atoms that are outside of the cell area into the cell, if possible
+within the periodic boundary conditions set.

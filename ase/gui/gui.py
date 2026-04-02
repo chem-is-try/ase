@@ -664,7 +664,7 @@ class GUI(View):
               M(_('_Rotate selected atoms'), self.toggle_rotate_mode,
                 'Ctrl+R'),
               M(_('NE_B plot'), self.neb),
-              M(_('B_ulk Modulus'), self.bulk_modulus),
+              M(_('B_ulk modulus'), self.bulk_modulus),
               M(_('Reciprocal space ...'), self.reciprocal),
               M(_('Wrap atoms'), self.wrap_atoms, 'Ctrl+W')]),
 
