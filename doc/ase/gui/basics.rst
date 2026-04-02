@@ -2,8 +2,8 @@
 GUI basics and command line options
 ===================================
 
-ASE has a built-in graphical user interface (GUI) which can be invoked
-from a terminal with the :command:`ase gui` subcommand and can read all
+ASE has a built-in graphical user interface (GUI) which can be invoked from
+a terminal with the :command:`ase gui` subcommand and which can read all
 the same file formats that the ASE's :func:`~ase.io.read` function
 understands:
 
@@ -14,9 +14,8 @@ understands:
 Type :command:`ase gui -h` for a description of all command line options.
 
 Alternatively, the GUI can be launched from a Python script or an
-interactive session by using :func:`ase.visualize.view` (see also:
-:ref:`polling`). For example, to view an Atoms object in the GUI *via*
-Python, do:
+interactive session by using :func:`ase.visualize.view`. For example, to
+view an Atoms object in the GUI *via* Python, do:
 
 >>> from ase.visualize import view
 >>> atoms = ...
@@ -38,7 +37,7 @@ Selecting a part of a trajectory
 
 When opening files that contain multiple atomic structures, a subset of
 the configurations can be selected using Python-like indexing
-separated with the `@` character, i.e.
+separated with the @ character, i.e.
 :file:`filename@{start}:{stop}:{step}`::
 
   $ ase gui x.traj@0:10:1  # first 10 images
