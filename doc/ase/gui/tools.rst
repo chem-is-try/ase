@@ -3,6 +3,7 @@ Tools
 =====
 
 .. _gui-tools graphs:
+
 Graphs
 ------
 
@@ -50,6 +51,7 @@ relaxations):
 
 
 .. _gui-tools movie:
+
 Movie
 -----
 

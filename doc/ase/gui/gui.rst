@@ -22,3 +22,4 @@ between different file formats.
    view
    tools
    setup
+   calculate
