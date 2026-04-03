@@ -310,7 +310,7 @@ class VibrationsData:
         """
         return self._hessian2d.copy()
 
-    def todict(self) -> Dict[str, Any]:
+    def todict(self) -> dict[str, Any]:
         unconstrained_indices = self.indices_from_constraints(self._atoms)
         if (
             len(self._indices) == len(unconstrained_indices)
