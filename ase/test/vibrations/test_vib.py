@@ -533,7 +533,7 @@ def fixture_indices(request):
 
 def test_init(n3_data):
     # Check that init runs without error; properties are checked in other
-    # methods using the (identical) n2_vibdata fixture
+    # methods using the n3_vibdata fixture
     VibrationsData(n3_data['atoms'], n3_data['hessian'])
 
 
