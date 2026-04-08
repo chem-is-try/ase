@@ -214,11 +214,11 @@ Contents
 
     about
     install
+    examples_generated/index
+    gettingstarted/gettingstarted
     cmdline
     ase/gui/gui
-    examples_generated/index
     ase/ase
-    gettingstarted/gettingstarted
     tips
     gallery/gallery
     releasenotes
