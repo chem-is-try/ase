@@ -14,6 +14,7 @@ Requirements
 
 Optional:
 
+* Tkinter_ for the graphical user interface
 * Flask_ for :mod:`ase.db` web-interface
 * pytest_ for running tests
 * pytest-mock_ for running some more tests
@@ -199,3 +200,21 @@ Run the tests like this::
     $ ase test  # takes 1 min.
 
 and send us the output if there are failing tests.
+
+
+.. _Tkinter:
+
+Making the GUI work
+===================
+
+Depending on you operating system and your Python installation, :ref:`ase-gui`
+could work out of the box. However, in some cases, such as when using the
+pre-installed Python on Debian/Ubuntu, it may fail if Tk/Tkinter is not
+installed by default. The necessary dependency is available from many system
+package managers under a name such as ``python3-tk``. See e.g. TkDocs_ for
+more comprehensive instructions.
+
+ASE has some options for :ref:`configuring the GUI <gui configuration>` that
+can provide a more customized experience.
+
+.. _TkDocs: https://tkdocs.com/tutorial/install.html
