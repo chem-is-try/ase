@@ -975,25 +975,14 @@ def read_onetep_out(fd, index=-1, improving=False, **kwargs):
             cell = parse_first_cell(idx) if idx else None
         cells.append(cell)
 
-    charges = []
-    for idx in output_corr[ONETEP_MULLIKEN]:
-        charge = parse_charge(idx) if idx else None
-        charges.append(charge)
+    def parse_multiple(parsefunc, indices):
+        return [parsefunc(idx) if idx else None for idx in indices]
 
-    energies = []
-    for idx in output_corr[ONETEP_TOTAL_ENERGY]:
-        energy = parse_energy(idx) if idx else None
-        energies.append(energy)
-
-    fermi_levels = []
-    for idx in output_corr[ONETEP_TOTAL_ENERGY]:
-        fermi_level = parse_fermi_level(idx) if idx else None
-        fermi_levels.append(fermi_level)
-
-    magmoms = []
-    for idx in output_corr[ONETEP_MULLIKEN]:
-        magmom = parse_spin(idx) if idx else None
-        magmoms.append(magmom)
+    charges = parse_multiple(parse_charge, output_corr[ONETEP_MULLIKEN])
+    energies = parse_multiple(parse_energy, output_corr[ONETEP_TOTAL_ENERGY])
+    fermi_levels = parse_multiple(parse_fermi_level,
+                                  output_corr[ONETEP_MULLIKEN])
+    magmoms = parse_multiple(parse_spin, output_corr[ONETEP_MULLIKEN])
 
     real_species = []
     for idx in species:
