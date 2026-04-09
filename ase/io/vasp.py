@@ -544,12 +544,6 @@ def read_vasp_xml(filename='vasprun.xml', index=-1):
                                        constraint=constraints,
                                        pbc=True)
 
-                elif elem.tag == 'dipole':
-                    dblock = elem.find('v[@name="dipole"]')
-                    if dblock is not None:
-                        dipole = np.array(
-                            [float(val) for val in dblock.text.split()])
-
             elif event == 'start' and elem.tag == 'calculation':
                 calculation.append(elem)
 
