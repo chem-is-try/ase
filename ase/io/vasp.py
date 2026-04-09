@@ -769,7 +769,7 @@ def _write_xdatcar_config(fd, atoms, index):
     """
     fd.write(f"Direct configuration={index:6d}\n")
     float_string = '{:11.8f}'
-    scaled_positions = atoms.get_scaled_positions()
+    scaled_positions = atoms.get_scaled_positions(wrap=False)
     for row in scaled_positions:
         fd.write('  ')
         fd.write(' '.join([float_string.format(x) for x in row]))
