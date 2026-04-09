@@ -243,7 +243,7 @@ def read_vasp_configuration(fd):
             except KeyError:
                 atomtypes = atomtypes_outpot(fd.name, numsyms)
 
-    # Certain versions of VASP compiled with hdf5 support will write POTCAR 
+    # Certain versions of VASP compiled with hdf5 support will write POTCAR
     # symbols with hashes to the CONTCAR (e.g. "Na_pv/6a2f546d)".
     for i, atomtype in enumerate(atomtypes):
         potcar_label = atomtype.split('/')[0]
