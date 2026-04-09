@@ -154,12 +154,13 @@ class GUI(View):
     @functools.cached_property
     def arrowkey_hint(self):
         hint = ui.tk.Frame(
-            self.window.canvas, bg='#ffffff'
+            self.window.canvas, bg=self.window.bg
         )
         hint.label = ui.tk.Label(hint)
         hint.qm = ui.tk.Label(
             hint, text='(?)', padx=3,
-            bg='#ffffff', activeforeground="#ffb617"
+            bg=self.window.bg,
+            fg=self.window.fg
         )
         hint.qm.grid(row=0, column=0)
         hint.label.grid(row=0, column=1)
