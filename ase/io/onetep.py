@@ -798,24 +798,6 @@ def read_onetep_out(fd, index=-1, improving=False, **kwargs):
             n += 1
         return None
 
-    def parse_fermi_level(idx):
-        n = 0
-        fermi_levels = None
-        while idx + n < len(fdo_lines):
-            if 'Fermi_level' in fdo_lines[idx + n]:
-                tmp = '\n'.join(fdo_lines[idx + n : idx + n + 1])
-                fermi_level = re.findall(freg, tmp)
-                fermi_levels = [
-                    float(i) * units['Hartree'] for i in fermi_level
-                ]
-            if re.search(
-                r'^\s*<{5}\s*CALCULATION\s*SUMMARY\s*>{5}\s*$',
-                fdo_lines[idx + n],
-            ):
-                return fermi_levels
-            n += 1
-        return None
-
     def parse_first_cell(idx):
         n = 0
         offset = 1
@@ -980,8 +962,6 @@ def read_onetep_out(fd, index=-1, improving=False, **kwargs):
 
     charges = parse_multiple(parse_charge, output_corr[ONETEP_MULLIKEN])
     energies = parse_multiple(parse_energy, output_corr[ONETEP_TOTAL_ENERGY])
-    fermi_levels = parse_multiple(parse_fermi_level,
-                                  output_corr[ONETEP_MULLIKEN])
     magmoms = parse_multiple(parse_spin, output_corr[ONETEP_MULLIKEN])
 
     real_species = []
