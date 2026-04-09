@@ -543,6 +543,26 @@ def write_onetep_in(
     fd.write(input_footer)
 
 
+def match_outputs(fdo_lines, output_keys):
+    # Find all matches, append them to the dictionary
+    breg = '|'.join([i.pattern.replace('(?i)', '') for i in output_keys])
+    prematch = {}
+
+    for idx, line in enumerate(fdo_lines):
+        matches = re.search(breg, line)
+        if matches:
+            prematch[idx] = matches.group(0)
+
+    output = {key: [] for key in output_keys}
+    for key, value in prematch.items():
+        for reg in output_keys:
+            if re.search(reg, value):
+                output[reg].append(key)
+                break
+
+    return {key: np.array(value) for key, value in output.items()}
+
+
 def read_onetep_out(fd, index=-1, improving=False, **kwargs):
     """
     Read ONETEP output(s).
@@ -606,22 +626,8 @@ def read_onetep_out(fd, index=-1, improving=False, **kwargs):
         ONETEP_FIRST_CELL,
     ]
 
-    # Find all matches append them to the dictionary
-    breg = '|'.join([i.pattern.replace('(?i)', '') for i in output.keys()])
-    prematch = {}
+    output = match_outputs(fdo_lines, [*output])
 
-    for idx, line in enumerate(fdo_lines):
-        matches = re.search(breg, line)
-        if matches:
-            prematch[idx] = matches.group(0)
-
-    for key, value in prematch.items():
-        for reg in output.keys():
-            if re.search(reg, value):
-                output[reg].append(key)
-                break
-
-    output = {key: np.array(value) for key, value in output.items()}
     # Conveniance notation (pointers: no overhead, no additional memory)
     ibfgs_iter = np.hstack((output[ONETEP_IBFGS_ITER], output[ONETEP_END_GEOM]))
     ibfgs_start = output[ONETEP_START_GEOM]
