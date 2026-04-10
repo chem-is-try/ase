@@ -3,7 +3,7 @@ import pytest
 
 from ase.build import bulk
 from ase.io import Trajectory, read
-from ase.md import Andersen, Langevin, VelocityVerlet, init_momenta
+from ase.md import Andersen, Langevin, VelocityVerlet, thermalize_momenta
 from ase.md.velocitydistribution import Stationary
 from ase.units import fs
 
@@ -91,5 +91,5 @@ def prepare_md(atoms, calculator):
 
 
 def thermalize(temp, atoms, rng):
-    init_momenta(atoms, temp, exact_temperature=True, rng=rng)
+    thermalize_momenta(atoms, temp, exact_temperature=True, rng=rng)
     Stationary(atoms)

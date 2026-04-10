@@ -95,7 +95,7 @@ def _maxwellboltzmanndistribution(masses, temp, comm=world, rng=None):
     return momenta
 
 
-@deprecated('Use init_momenta', DeprecationWarning)
+@deprecated('Use thermalize_momenta', DeprecationWarning)
 def MaxwellBoltzmannDistribution(
     atoms: Atoms,
     *,
@@ -111,7 +111,7 @@ def MaxwellBoltzmannDistribution(
         The ``temp`` argument is removed. Use ``temperature_K`` instead.
 
     .. deprecated:: 3.28.0
-        Use :func:`init_momenta` instead.
+        Use :func:`thermalize_momenta` instead.
 
     Parameters
     ----------
@@ -157,7 +157,7 @@ def MaxwellBoltzmannDistribution(
         )
         warnings.warn(msg, FutureWarning)
         comm = DummyMPI()
-    init_momenta(
+    thermalize_momenta(
         atoms,
         temperature_K,
         comm=comm,
@@ -166,7 +166,7 @@ def MaxwellBoltzmannDistribution(
     )
 
 
-def init_momenta(
+def thermalize_momenta(
     atoms: Atoms,
     temperature_K: float,
     *,

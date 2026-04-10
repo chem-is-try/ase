@@ -10,7 +10,7 @@ from ase.md.nose_hoover_chain import (
     MaskedMTKNPT,
     NoseHooverChainNVT,
 )
-from ase.md.velocitydistribution import init_momenta
+from ase.md.velocitydistribution import thermalize_momenta
 from ase.md.verlet import VelocityVerlet
 
 __all__ = [
@@ -23,5 +23,5 @@ __all__ = [
     'IsotropicMTKNPT',
     'MTKNPT',
     'MaskedMTKNPT',
-    'init_momenta',
+    'thermalize_momenta',
 ]

@@ -4,7 +4,7 @@ import pytest
 from ase import units
 from ase.build import bulk
 from ase.calculators.harmonic import SpringCalculator
-from ase.md import init_momenta
+from ase.md import thermalize_momenta
 from ase.md.switch_langevin import SwitchLangevin
 
 
@@ -47,7 +47,7 @@ def test_langevin_switching():
         fixcm=False,
         rng=rng,
     ) as dyn_forward:
-        init_momenta(atoms, 2.0 * temperature, rng=rng)
+        thermalize_momenta(atoms, 2.0 * temperature, rng=rng)
         dyn_forward.run()
         dF_forward = dyn_forward.get_free_energy_difference() / len(atoms)
 
@@ -64,7 +64,7 @@ def test_langevin_switching():
         fixcm=False,
         rng=rng,
     ) as dyn_backward:
-        init_momenta(atoms, 2.0 * temperature, rng=rng)
+        thermalize_momenta(atoms, 2.0 * temperature, rng=rng)
         dyn_backward.run()
         dF_backward = -dyn_backward.get_free_energy_difference() / len(atoms)
 

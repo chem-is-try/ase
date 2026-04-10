@@ -11,7 +11,7 @@ from ase import units
 from ase.atoms import Atoms
 from ase.build import molecule
 from ase.calculators.calculator import CalculatorSetupError
-from ase.md import init_momenta
+from ase.md import thermalize_momenta
 from ase.md.verlet import VelocityVerlet
 from ase.optimize import BFGS
 
@@ -89,7 +89,7 @@ def test_md(cp2k_factory):
     atoms = Atoms('HH', positions=positions, calculator=calc)
     atoms.center(vacuum=2.0)
 
-    init_momenta(atoms, 0.5 * 300.0, exact_temperature=True)
+    thermalize_momenta(atoms, 0.5 * 300.0, exact_temperature=True)
     energy_start = atoms.get_potential_energy() + atoms.get_kinetic_energy()
     with VelocityVerlet(atoms, 0.5 * units.fs) as dyn:
         dyn.run(20)

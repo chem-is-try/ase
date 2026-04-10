@@ -5,7 +5,7 @@ import scipy
 import ase.io
 from ase.atoms import Atoms
 from ase.calculators.morse import MorsePotential
-from ase.md import init_momenta
+from ase.md import thermalize_momenta
 from ase.md.langevinbaoab import LangevinBAOAB
 from ase.neighborlist import neighbor_list
 from ase.units import GPa as u_GPa
@@ -166,7 +166,7 @@ def test_LangevinBAOAB_NsH(tmp_path, atoms, calc):
         atoms.info['barostat_mass'] = dyn.barostat_mass
 
     externalstress_GPa = 0.0
-    init_momenta(atoms, 300.0, rng=rng)
+    thermalize_momenta(atoms, 300.0, rng=rng)
     # expect warning about using heuristics for T_tau and/or P_tau
     warnings = [
         r'Got `externalstress` but missing `P_tau` and `T_tau`,',

@@ -4,7 +4,7 @@ import pytest
 
 from ase.build import bulk
 from ase.calculators.idealgas import IdealGas
-from ase.md import VelocityVerlet, init_momenta
+from ase.md import VelocityVerlet, thermalize_momenta
 from ase.units import kB
 
 
@@ -19,7 +19,7 @@ def test_idealgas():
 
     md_temp = 1000
 
-    init_momenta(atoms, md_temp, rng=rng)
+    thermalize_momenta(atoms, md_temp, rng=rng)
     print(f"Temperature: {atoms.get_temperature()} K")
 
     with VelocityVerlet(atoms, timestep=0.1) as md:

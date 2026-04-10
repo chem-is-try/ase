@@ -5,7 +5,7 @@ import os
 import numpy as np
 
 from ase import io, units
-from ase.md import MDLogger, VelocityVerlet, init_momenta
+from ase.md import MDLogger, VelocityVerlet, thermalize_momenta
 from ase.optimize import QuasiNewton
 from ase.parallel import paropen, world
 
@@ -311,7 +311,7 @@ class MinimaHopping:
             self._log('msg', 'Starting MD with %i existing energies.' %
                       len(energies))
         if not thermalized:
-            init_momenta(
+            thermalize_momenta(
                 self._atoms,
                 self._temperature,
                 exact_temperature=True,

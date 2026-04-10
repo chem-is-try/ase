@@ -6,7 +6,7 @@ from scipy.stats import gaussian_kde
 
 from ase import Atoms, units
 from ase.calculators.morse import MorsePotential
-from ase.md import init_momenta
+from ase.md import thermalize_momenta
 from ase.md.langevin import Langevin
 
 # Morse potential parameters of O2 in the ground state
@@ -27,7 +27,7 @@ def run(temperature_K: float) -> np.ndarray:
     rng = np.random.default_rng(42)
 
     # Initialize velocities
-    init_momenta(atoms, temperature_K, rng=rng)
+    thermalize_momenta(atoms, temperature_K, rng=rng)
 
     steps = 1000
     distances = np.full(steps + 1, np.nan)

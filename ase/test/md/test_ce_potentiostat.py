@@ -6,7 +6,7 @@ import pytest
 
 from ase.build import bulk
 from ase.calculators.emt import EMT
-from ase.md import init_momenta
+from ase.md import thermalize_momenta
 from ase.md.contour_exploration import ContourExploration
 
 from .test_ce_curvature import Al_atom_pair
@@ -43,7 +43,7 @@ def test_potentiostat(testdir):
     initial_energy = atoms.get_potential_energy()
 
     rng = np.random.RandomState(seed)
-    init_momenta(atoms, 300.0, rng=rng)
+    thermalize_momenta(atoms, 300.0, rng=rng)
     with ContourExploration(
         atoms,
         **bulk_Al_settings,

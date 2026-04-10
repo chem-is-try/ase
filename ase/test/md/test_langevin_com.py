@@ -4,7 +4,7 @@ from ase import units
 from ase.build import bulk
 from ase.calculators.emt import EMT
 from ase.constraints import FixCom
-from ase.md import init_momenta
+from ase.md import thermalize_momenta
 from ase.md.langevin import Langevin
 from ase.md.velocitydistribution import Stationary
 
@@ -26,7 +26,7 @@ def test_langevin_com():
     atoms.calc = EMT()
     atoms.set_constraint(FixCom())
 
-    init_momenta(atoms, temperature)
+    thermalize_momenta(atoms, temperature)
     Stationary(atoms)
 
     mtot = atoms.get_momenta().sum(axis=0)

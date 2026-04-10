@@ -561,7 +561,7 @@ to the correct temperature.
 
 .. module:: ase.md.velocitydistribution
 
-.. autofunction:: init_momenta
+.. autofunction:: thermalize_momenta
 
 .. autofunction:: MaxwellBoltzmannDistribution
 

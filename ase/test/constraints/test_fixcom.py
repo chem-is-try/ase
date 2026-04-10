@@ -7,7 +7,7 @@ from ase import Atoms
 from ase.build import molecule
 from ase.calculators.emt import EMT
 from ase.constraints import FixCom
-from ase.md import init_momenta
+from ase.md import thermalize_momenta
 from ase.optimize import BFGS
 
 
@@ -42,7 +42,7 @@ def test_center_of_mass_velocity(atoms: Atoms):
     atoms.set_constraint(FixCom())
 
     # `adjust_momenta` of constaints are applied inside
-    init_momenta(atoms, 300.0)
+    thermalize_momenta(atoms, 300.0)
 
     velocity_com = atoms.get_momenta().sum(axis=0) / atoms.get_masses().sum()
 

@@ -10,7 +10,7 @@ from ase.calculators.emt import EMT
 from ase.calculators.harmonic import HarmonicCalculator, HarmonicForceField
 from ase.calculators.mixing import MixedCalculator
 from ase.geometry.geometry import get_distances_derivatives
-from ase.md import init_momenta
+from ase.md import thermalize_momenta
 from ase.md.andersen import Andersen
 from ase.md.velocitydistribution import (
     Stationary,
@@ -262,7 +262,7 @@ def test_thermodynamic_integration():
                                            1 - lamb, lamb)
         atoms = ref_atoms.copy()
         atoms.calc = calc_linearCombi
-        init_momenta(atoms, 300.0, exact_temperature=True)
+        thermalize_momenta(atoms, 300.0, exact_temperature=True)
         Stationary(atoms)
         ZeroRotation(atoms)
         with Andersen(atoms, 0.5 * fs, temperature_K=300, andersen_prob=0.05,
