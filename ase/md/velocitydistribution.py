@@ -107,10 +107,10 @@ def MaxwellBoltzmannDistribution(
 ):
     """Set the atomic momenta to a Maxwell-Boltzmann distribution.
 
-    .. versionremoved:: 3.28.0
+    .. versionremoved:: 3.29.0
         The ``temp`` argument is removed. Use ``temperature_K`` instead.
 
-    .. deprecated:: 3.28.0
+    .. deprecated:: 3.29.0
         Use :func:`thermalize_momenta` instead.
 
     Parameters
@@ -178,7 +178,7 @@ def thermalize_momenta(
 
     See :func:`MaxwellBoltzmannDistribution` for details of parameters.
 
-    .. versionadded:: 3.28.0
+    .. versionadded:: 3.29.0
 
     Parameters
     ----------
