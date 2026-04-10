@@ -89,7 +89,7 @@ def read_gpaw_out(fileobj, index):  # -> Union[Atoms, List[Atoms]]:
     return images[index]
 
 
-def process_block(lines: list[str], q: float | None, is_first: bool) -> Atoms:
+def process_block(lines, q, is_first):
     try:
         i = lines.index('unit cell:\n')
     except ValueError:
