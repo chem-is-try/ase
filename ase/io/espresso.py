@@ -1490,6 +1490,212 @@ def write_espresso_ph(
         fd.write("\n")
 
 
+class _PHHelper:
+    freg = re.compile(r"-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+\-]?\d+)?")
+
+    def __init__(self, fdo_lines):
+        self.fdo_lines = fdo_lines
+        self.n_lines = len(fdo_lines)
+
+    def _read_qpoints(self, idx):
+        match = re.findall(self.freg, self.fdo_lines[idx])
+        return tuple(round(float(x), 7) for x in match)
+
+    def _read_kpoints(self, idx):
+        n_kpts = int(re.findall(self.freg, self.fdo_lines[idx])[0])
+        kpts = []
+        for line in self.fdo_lines[idx + 2: idx + 2 + n_kpts]:
+            if bool(re.search(r"^\s*k\(.*wk", line)):
+                kpts.append([round(float(x), 7)
+                            for x in re.findall(self.freg, line)[1:]])
+        return np.array(kpts)
+
+    def _read_repr(self, idx):
+        n_repr, curr, n = int(re.findall(self.freg,
+                                         self.fdo_lines[idx])[0]), 0, 0
+        representations = {}
+        while idx + n < self.n_lines:
+            if re.search(r"^\s*Representation.*modes", self.fdo_lines[idx + n]):
+                curr = int(re.findall(self.freg, self.fdo_lines[idx + n])[0])
+                representations[curr] = {"done": False, "modes": []}
+            if re.search(r"Calculated\s*using\s*symmetry",
+                         self.fdo_lines[idx + n]) \
+                    or re.search(r"-\s*Done\s*$", self.fdo_lines[idx + n]):
+                representations[curr]["done"] = True
+            if re.search(r"(?i)^\s*(mode\s*#\s*\d\s*)+",
+                         self.fdo_lines[idx + n]):
+                representations[curr]["modes"] = self._read_modes(idx + n)
+                if curr == n_repr:
+                    break
+            n += 1
+        return representations
+
+    def _read_modes(self, idx):
+        n = 1
+        n_modes = len(re.findall(r"mode", self.fdo_lines[idx]))
+        modes = []
+        while not modes or bool(re.match(r"^\s*\(", self.fdo_lines[idx + n])):
+            tmp = re.findall(self.freg, self.fdo_lines[idx + n])
+            modes.append([round(float(x), 5) for x in tmp])
+            n += 1
+        return np.hsplit(np.array(modes), n_modes)
+
+    def _read_eqpoints(self, idx):
+        n_star = int(re.findall(self.freg, self.fdo_lines[idx])[0])
+        return np.loadtxt(
+            self.fdo_lines[idx + 2: idx + 2 + n_star], usecols=(1, 2, 3)
+        ).reshape(-1, 3)
+
+    def _read_freqs(self, idx):
+        n = 0
+        freqs = []
+        stop = 0
+        while not freqs or stop < 2:
+            if bool(re.search(r"^\s*freq", self.fdo_lines[idx + n])):
+                tmp = re.findall(self.freg, self.fdo_lines[idx + n])[1]
+                freqs.append(float(tmp))
+            if bool(re.search(r"\*{5,}", self.fdo_lines[idx + n])):
+                stop += 1
+            n += 1
+        return np.array(freqs)
+
+    def _read_sym(self, idx):
+        n = 1
+        sym = {}
+        while bool(re.match(r"^\s*freq", self.fdo_lines[idx + n])):
+            r = re.findall("\\d+", self.fdo_lines[idx + n])
+            r = tuple(range(int(r[0]), int(r[1]) + 1))
+            sym[r] = self.fdo_lines[idx + n].split("-->")[1].strip()
+            sym[r] = re.sub(r"\s+", " ", sym[r])
+            n += 1
+        return sym
+
+    def _read_epsil(self, idx):
+        epsil = np.zeros((3, 3))
+        for n in range(1, 4):
+            tmp = re.findall(self.freg, self.fdo_lines[idx + n])
+            epsil[n - 1] = [round(float(x), 9) for x in tmp]
+        return epsil
+
+    def _read_born(self, idx):
+        n = 1
+        born = []
+        while idx + n < self.n_lines:
+            if re.search(r"^\s*atom\s*\d\s*\S", self.fdo_lines[idx + n]):
+                pass
+            elif re.search(r"^\s*E\*?(x|y|z)\s*\(", self.fdo_lines[idx + n]):
+                tmp = re.findall(self.freg, self.fdo_lines[idx + n])
+                born.append([round(float(x), 5) for x in tmp])
+            else:
+                break
+            n += 1
+        born = np.array(born)
+        return np.vsplit(born, len(born) // 3)
+
+    def _read_born_dfpt(self, idx):
+        n = 1
+        born = []
+        while idx + n < self.n_lines:
+            if re.search(r"^\s*atom\s*\d\s*\S", self.fdo_lines[idx + n]):
+                pass
+            elif re.search(r"^\s*P(x|y|z)\s*\(", self.fdo_lines[idx + n]):
+                tmp = re.findall(self.freg, self.fdo_lines[idx + n])
+                born.append([round(float(x), 5) for x in tmp])
+            else:
+                break
+            n += 1
+        born = np.array(born)
+        return np.vsplit(born, len(born) // 3)
+
+    def _read_pola(self, idx):
+        pola = np.zeros((3, 3))
+        for n in range(1, 4):
+            tmp = re.findall(self.freg, self.fdo_lines[idx + n])[:3]
+            pola[n - 1] = [round(float(x), 2) for x in tmp]
+        return pola
+
+    def _read_positions(self, idx):
+        positions = []
+        symbols = []
+        n = 1
+        while re.findall(r"^\s*\d+", self.fdo_lines[idx + n]):
+            symbols.append(self.fdo_lines[idx + n].split()[1])
+            positions.append(
+                [round(float(x), 5)
+                 for x in re.findall(self.freg, self.fdo_lines[idx + n])[-3:]]
+            )
+            n += 1
+        atoms = Atoms(positions=positions, symbols=symbols)
+        atoms.pbc = True
+        return atoms
+
+    def _read_alat(self, idx):
+        return round(float(re.findall(self.freg, self.fdo_lines[idx])[1]), 5)
+
+    def _read_cell(self, idx):
+        cell = []
+        n = 1
+        while re.findall(r"^\s*a\(\d\)", self.fdo_lines[idx + n]):
+            cell.append(
+                [round(float(x), 4)
+                 for x in re.findall(self.freg, self.fdo_lines[idx + n])[-3:]])
+            n += 1
+        return np.array(cell)
+
+    def _read_electron_phonon(self, idx):
+        results = {}
+
+        broad_re = (
+            r"^\s*Gaussian\s*Broadening:\s+([\d.]+)\s+Ry, ngauss=\s+\d+"
+        )
+        dos_re = (
+            r"^\s*DOS\s*=\s*([\d.]+)\s*states/"
+            r"spin/Ry/Unit\s*Cell\s*at\s*Ef=\s+([\d.]+)\s+eV"
+        )
+        lg_re = (
+            r"^\s*lambda\(\s+(\d+)\)=\s+([\d.]+)\s+gamma=\s+([\d.]+)\s+GHz"
+        )
+        end_re = r"^\s*Number\s*of\s*q\s*in\s*the\s*star\s*=\s+(\d+)$"
+
+        lambdas = []
+        gammas = []
+
+        current = None
+
+        n = 1
+        while idx + n < self.n_lines:
+            line = self.fdo_lines[idx + n]
+
+            broad_match = re.match(broad_re, line)
+            dos_match = re.match(dos_re, line)
+            lg_match = re.match(lg_re, line)
+            end_match = re.match(end_re, line)
+
+            if broad_match:
+                if lambdas:
+                    results[current]["lambdas"] = lambdas
+                    results[current]["gammas"] = gammas
+                    lambdas = []
+                    gammas = []
+                current = float(broad_match[1])
+                results[current] = {}
+            elif dos_match:
+                results[current]["dos"] = float(dos_match[1])
+                results[current]["fermi"] = float(dos_match[2])
+            elif lg_match:
+                lambdas.append(float(lg_match[2]))
+                gammas.append(float(lg_match[3]))
+
+            if end_match:
+                results[current]["lambdas"] = lambdas
+                results[current]["gammas"] = gammas
+                break
+
+            n += 1
+
+        return results
+
+
 @reader
 def read_espresso_ph(fileobj):
     """
@@ -1529,7 +1735,6 @@ def read_espresso_ph(fileobj):
     dict
         The results dictionnary as described above.
     """
-    freg = re.compile(r"-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+\-]?\d+)?")
 
     QPOINTS = r"(?i)^\s*Calculation\s*of\s*q"
     NKPTS = r"(?i)^\s*number\s*of\s*k\s*points\s*"
@@ -1610,220 +1815,28 @@ def read_espresso_ph(fileobj):
 
     output = {key: np.array(value) for key, value in output.items()}
 
-    def _read_qpoints(idx):
-        match = re.findall(freg, fdo_lines[idx])
-        return tuple(round(float(x), 7) for x in match)
-
-    def _read_kpoints(idx):
-        n_kpts = int(re.findall(freg, fdo_lines[idx])[0])
-        kpts = []
-        for line in fdo_lines[idx + 2: idx + 2 + n_kpts]:
-            if bool(re.search(r"^\s*k\(.*wk", line)):
-                kpts.append([round(float(x), 7)
-                            for x in re.findall(freg, line)[1:]])
-        return np.array(kpts)
-
-    def _read_repr(idx):
-        n_repr, curr, n = int(re.findall(freg, fdo_lines[idx])[0]), 0, 0
-        representations = {}
-        while idx + n < n_lines:
-            if re.search(r"^\s*Representation.*modes", fdo_lines[idx + n]):
-                curr = int(re.findall(freg, fdo_lines[idx + n])[0])
-                representations[curr] = {"done": False, "modes": []}
-            if re.search(r"Calculated\s*using\s*symmetry", fdo_lines[idx + n]) \
-                    or re.search(r"-\s*Done\s*$", fdo_lines[idx + n]):
-                representations[curr]["done"] = True
-            if re.search(r"(?i)^\s*(mode\s*#\s*\d\s*)+", fdo_lines[idx + n]):
-                representations[curr]["modes"] = _read_modes(idx + n)
-                if curr == n_repr:
-                    break
-            n += 1
-        return representations
-
-    def _read_modes(idx):
-        n = 1
-        n_modes = len(re.findall(r"mode", fdo_lines[idx]))
-        modes = []
-        while not modes or bool(re.match(r"^\s*\(", fdo_lines[idx + n])):
-            tmp = re.findall(freg, fdo_lines[idx + n])
-            modes.append([round(float(x), 5) for x in tmp])
-            n += 1
-        return np.hsplit(np.array(modes), n_modes)
-
-    def _read_eqpoints(idx):
-        n_star = int(re.findall(freg, fdo_lines[idx])[0])
-        return np.loadtxt(
-            fdo_lines[idx + 2: idx + 2 + n_star], usecols=(1, 2, 3)
-        ).reshape(-1, 3)
-
-    def _read_freqs(idx):
-        n = 0
-        freqs = []
-        stop = 0
-        while not freqs or stop < 2:
-            if bool(re.search(r"^\s*freq", fdo_lines[idx + n])):
-                tmp = re.findall(freg, fdo_lines[idx + n])[1]
-                freqs.append(float(tmp))
-            if bool(re.search(r"\*{5,}", fdo_lines[idx + n])):
-                stop += 1
-            n += 1
-        return np.array(freqs)
-
-    def _read_sym(idx):
-        n = 1
-        sym = {}
-        while bool(re.match(r"^\s*freq", fdo_lines[idx + n])):
-            r = re.findall("\\d+", fdo_lines[idx + n])
-            r = tuple(range(int(r[0]), int(r[1]) + 1))
-            sym[r] = fdo_lines[idx + n].split("-->")[1].strip()
-            sym[r] = re.sub(r"\s+", " ", sym[r])
-            n += 1
-        return sym
-
-    def _read_epsil(idx):
-        epsil = np.zeros((3, 3))
-        for n in range(1, 4):
-            tmp = re.findall(freg, fdo_lines[idx + n])
-            epsil[n - 1] = [round(float(x), 9) for x in tmp]
-        return epsil
-
-    def _read_born(idx):
-        n = 1
-        born = []
-        while idx + n < n_lines:
-            if re.search(r"^\s*atom\s*\d\s*\S", fdo_lines[idx + n]):
-                pass
-            elif re.search(r"^\s*E\*?(x|y|z)\s*\(", fdo_lines[idx + n]):
-                tmp = re.findall(freg, fdo_lines[idx + n])
-                born.append([round(float(x), 5) for x in tmp])
-            else:
-                break
-            n += 1
-        born = np.array(born)
-        return np.vsplit(born, len(born) // 3)
-
-    def _read_born_dfpt(idx):
-        n = 1
-        born = []
-        while idx + n < n_lines:
-            if re.search(r"^\s*atom\s*\d\s*\S", fdo_lines[idx + n]):
-                pass
-            elif re.search(r"^\s*P(x|y|z)\s*\(", fdo_lines[idx + n]):
-                tmp = re.findall(freg, fdo_lines[idx + n])
-                born.append([round(float(x), 5) for x in tmp])
-            else:
-                break
-            n += 1
-        born = np.array(born)
-        return np.vsplit(born, len(born) // 3)
-
-    def _read_pola(idx):
-        pola = np.zeros((3, 3))
-        for n in range(1, 4):
-            tmp = re.findall(freg, fdo_lines[idx + n])[:3]
-            pola[n - 1] = [round(float(x), 2) for x in tmp]
-        return pola
-
-    def _read_positions(idx):
-        positions = []
-        symbols = []
-        n = 1
-        while re.findall(r"^\s*\d+", fdo_lines[idx + n]):
-            symbols.append(fdo_lines[idx + n].split()[1])
-            positions.append(
-                [round(float(x), 5)
-                 for x in re.findall(freg, fdo_lines[idx + n])[-3:]]
-            )
-            n += 1
-        atoms = Atoms(positions=positions, symbols=symbols)
-        atoms.pbc = True
-        return atoms
-
-    def _read_alat(idx):
-        return round(float(re.findall(freg, fdo_lines[idx])[1]), 5)
-
-    def _read_cell(idx):
-        cell = []
-        n = 1
-        while re.findall(r"^\s*a\(\d\)", fdo_lines[idx + n]):
-            cell.append([round(float(x), 4)
-                         for x in re.findall(freg, fdo_lines[idx + n])[-3:]])
-            n += 1
-        return np.array(cell)
-
-    def _read_electron_phonon(idx):
-        results = {}
-
-        broad_re = (
-            r"^\s*Gaussian\s*Broadening:\s+([\d.]+)\s+Ry, ngauss=\s+\d+"
-        )
-        dos_re = (
-            r"^\s*DOS\s*=\s*([\d.]+)\s*states/"
-            r"spin/Ry/Unit\s*Cell\s*at\s*Ef=\s+([\d.]+)\s+eV"
-        )
-        lg_re = (
-            r"^\s*lambda\(\s+(\d+)\)=\s+([\d.]+)\s+gamma=\s+([\d.]+)\s+GHz"
-        )
-        end_re = r"^\s*Number\s*of\s*q\s*in\s*the\s*star\s*=\s+(\d+)$"
-
-        lambdas = []
-        gammas = []
-
-        current = None
-
-        n = 1
-        while idx + n < n_lines:
-            line = fdo_lines[idx + n]
-
-            broad_match = re.match(broad_re, line)
-            dos_match = re.match(dos_re, line)
-            lg_match = re.match(lg_re, line)
-            end_match = re.match(end_re, line)
-
-            if broad_match:
-                if lambdas:
-                    results[current]["lambdas"] = lambdas
-                    results[current]["gammas"] = gammas
-                    lambdas = []
-                    gammas = []
-                current = float(broad_match[1])
-                results[current] = {}
-            elif dos_match:
-                results[current]["dos"] = float(dos_match[1])
-                results[current]["fermi"] = float(dos_match[2])
-            elif lg_match:
-                lambdas.append(float(lg_match[2]))
-                gammas.append(float(lg_match[3]))
-
-            if end_match:
-                results[current]["lambdas"] = lambdas
-                results[current]["gammas"] = gammas
-                break
-
-            n += 1
-
-        return results
+    helper = _PHHelper(fdo_lines)
 
     properties = {
-        NKPTS: _read_kpoints,
-        DIEL: _read_epsil,
-        BORN: _read_born,
-        BORN_DFPT: _read_born_dfpt,
-        POLA: _read_pola,
-        REPR: _read_repr,
-        EQPOINTS: _read_eqpoints,
-        DIAG: _read_freqs,
-        MODE_SYM: _read_sym,
-        POSITIONS: _read_positions,
-        ALAT: _read_alat,
-        CELL: _read_cell,
-        ELECTRON_PHONON: _read_electron_phonon,
+        NKPTS: helper._read_kpoints,
+        DIEL: helper._read_epsil,
+        BORN: helper._read_born,
+        BORN_DFPT: helper._read_born_dfpt,
+        POLA: helper._read_pola,
+        REPR: helper._read_repr,
+        EQPOINTS: helper._read_eqpoints,
+        DIAG: helper._read_freqs,
+        MODE_SYM: helper._read_sym,
+        POSITIONS: helper._read_positions,
+        ALAT: helper._read_alat,
+        CELL: helper._read_cell,
+        ELECTRON_PHONON: helper._read_electron_phonon,
     }
 
     iblocks = np.append(output[QPOINTS], n_lines)
 
     for qnum, (past, future) in enumerate(zip(iblocks[:-1], iblocks[1:])):
-        qpoint = _read_qpoints(past)
+        qpoint = helper._read_qpoints(past)
         results[qnum + 1] = curr_result = {"qpoint": qpoint}
         for prop in properties:
             p = (past < output[prop]) & (output[prop] < future)
