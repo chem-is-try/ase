@@ -51,6 +51,18 @@ def read_stresses(lines: list[str],
     return s, i
 
 
+def find_blocks(lines):
+    blocks = []
+    i1 = 0
+    for i2, line in enumerate(lines):
+        if line == 'positions:\n':
+            if i1 > 0:
+                blocks.append(lines[i1:i2])
+            i1 = i2
+    blocks.append(lines[i1:])
+    return blocks
+
+
 def read_gpaw_out(fileobj, index):  # -> Union[Atoms, List[Atoms]]:
     """Read text output from GPAW calculation."""
     lines = [line.lower() for line in fileobj.readlines()]
@@ -63,14 +75,7 @@ def read_gpaw_out(fileobj, index):  # -> Union[Atoms, List[Atoms]]:
     else:
         q = float(lines[ii].split()[2])
 
-    blocks = []
-    i1 = 0
-    for i2, line in enumerate(lines):
-        if line == 'positions:\n':
-            if i1 > 0:
-                blocks.append(lines[i1:i2])
-            i1 = i2
-    blocks.append(lines[i1:])
+    blocks = find_blocks(lines)
 
     images: list[Atoms] = []
     for lines in blocks:
