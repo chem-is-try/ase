@@ -179,6 +179,28 @@ def thermalize_momenta(
     See :func:`MaxwellBoltzmannDistribution` for details of parameters.
 
     .. versionadded:: 3.28.0
+
+    Parameters
+    ----------
+    atoms: Atoms object
+        The atoms.  Their momenta will be modified.
+
+    temperature_K: float
+        The temperature in Kelvin.
+
+    comm: MPI communicator, default: :data:`ase.parallel.world`
+        Communicator used to distribute an identical distribution to all tasks.
+
+    exact_temperature: bool, default: False
+        If True, the random momenta are rescaled so the kinetic energy is
+        exactly 3/2 N k T.  This is a slight deviation from the correct
+        Maxwell-Boltzmann distribution.
+
+    rng: Numpy RNG (optional)
+        Random number generator.  Default: numpy.random
+        If you would like to always get the identical distribution, you can
+        supply a random seed like ``rng=numpy.random.RandomState(seed)``, where
+        seed is an integer.
     """
     temp = units.kB * temperature_K  # K -> eV
     masses = atoms.get_masses()
