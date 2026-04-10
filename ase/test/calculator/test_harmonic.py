@@ -262,7 +262,7 @@ def test_thermodynamic_integration():
                                            1 - lamb, lamb)
         atoms = ref_atoms.copy()
         atoms.calc = calc_linearCombi
-        init_momenta(atoms, 300.0, force_temp=True)
+        init_momenta(atoms, 300.0, exact_temperature=True)
         Stationary(atoms)
         ZeroRotation(atoms)
         with Andersen(atoms, 0.5 * fs, temperature_K=300, andersen_prob=0.05,

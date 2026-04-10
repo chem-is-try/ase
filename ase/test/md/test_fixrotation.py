@@ -38,7 +38,7 @@ def test_fixrotation_asap(asap3):
         atoms.center(vacuum=5.0 + np.max(atoms.cell) / 2)
         print(atoms)
         atoms.calc = asap3.EMT()
-        init_momenta(atoms, 300.0, force_temp=True, rng=rng)
+        init_momenta(atoms, 300.0, exact_temperature=True, rng=rng)
         Stationary(atoms)
         check_inertia(atoms)
         com = atoms.get_center_of_mass()

@@ -30,7 +30,7 @@ def test_maxwellboltzmann_dof():
     init_momenta(atoms, 1000.0)
     assert pytest.approx(atoms.get_temperature(), 5) == 1000
 
-    init_momenta(atoms, 1000.0, force_temp=True)
+    init_momenta(atoms, 1000.0, exact_temperature=True)
     assert pytest.approx(atoms.get_temperature(), 1e-8) == 1000
 
     Stationary(atoms, preserve_temperature=True)

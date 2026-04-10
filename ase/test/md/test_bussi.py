@@ -78,7 +78,7 @@ def test_bussi_paranoia_check():
     atoms.calc = EMT()
 
     rng = np.random.default_rng(seed=10)
-    init_momenta(atoms, 300.0, rng=rng, force_temp=True)
+    init_momenta(atoms, 300.0, rng=rng, exact_temperature=True)
 
     temperatures = []
 
@@ -103,7 +103,7 @@ def test_bussi_paranoia_check2():
     atoms.calc = EMT()
 
     rng = np.random.default_rng(seed=91)
-    init_momenta(atoms, 300.0, rng=rng, force_temp=True)
+    init_momenta(atoms, 300.0, rng=rng, exact_temperature=True)
 
     temperatures = []
 

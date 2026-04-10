@@ -241,7 +241,7 @@ def test_nose_hoover_chain_nvt(asap3, tchain: int):
 
     temperature_K = 300
     rng = np.random.default_rng(0)
-    init_momenta(atoms, temperature_K, force_temp=True, rng=rng)
+    init_momenta(atoms, temperature_K, exact_temperature=True, rng=rng)
     Stationary(atoms)
 
     timestep = 1.0 * ase.units.fs
@@ -267,7 +267,7 @@ def test_isotropic_mtk_npt(asap3, hcp_Cu: Atoms, tchain: int, pchain: int):
 
     temperature_K = 300
     rng = np.random.default_rng(0)
-    init_momenta(atoms, temperature_K, force_temp=True, rng=rng)
+    init_momenta(atoms, temperature_K, exact_temperature=True, rng=rng)
     Stationary(atoms)
 
     timestep = 1.0 * ase.units.fs
@@ -297,7 +297,7 @@ def test_anisotropic_npt(asap3, hcp_Cu: Atoms, tchain: int, pchain: int):
 
     temperature_K = 300
     rng = np.random.default_rng(0)
-    init_momenta(atoms, temperature_K, force_temp=True, rng=rng)
+    init_momenta(atoms, temperature_K, exact_temperature=True, rng=rng)
     Stationary(atoms)
 
     timestep = 1.0 * ase.units.fs
@@ -343,7 +343,7 @@ def test_masked_npt(
 
     temperature_K = 300
     rng = np.random.default_rng(0)
-    init_momenta(atoms, temperature_K, force_temp=True, rng=rng)
+    init_momenta(atoms, temperature_K, exact_temperature=True, rng=rng)
     Stationary(atoms)
 
     timestep = 1.0 * ase.units.fs

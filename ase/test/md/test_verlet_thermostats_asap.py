@@ -91,5 +91,5 @@ def prepare_md(atoms, calculator):
 
 
 def thermalize(temp, atoms, rng):
-    init_momenta(atoms, temp, force_temp=True, rng=rng)
+    init_momenta(atoms, temp, exact_temperature=True, rng=rng)
     Stationary(atoms)

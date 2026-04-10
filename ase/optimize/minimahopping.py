@@ -314,7 +314,7 @@ class MinimaHopping:
             init_momenta(
                 self._atoms,
                 self._temperature,
-                force_temp=True,
+                exact_temperature=True,
                 rng=self._rng
             )
         traj = io.Trajectory('md%05i.traj' % self._counter, 'a',

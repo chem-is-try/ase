@@ -161,7 +161,7 @@ def MaxwellBoltzmannDistribution(
         atoms,
         temperature_K,
         comm=comm,
-        force_temp=force_temp,
+        exact_temperature=force_temp,
         rng=rng,
     )
 
@@ -171,7 +171,7 @@ def init_momenta(
     temperature_K: float,
     *,
     comm=world,
-    force_temp: bool = False,
+    exact_temperature: bool = False,
     rng=None,
 ) -> None:
     """Set the atomic momenta to a Maxwell-Boltzmann distribution.
@@ -184,7 +184,7 @@ def init_momenta(
     masses = atoms.get_masses()
     momenta = _maxwellboltzmanndistribution(masses, temp, comm=comm, rng=rng)
     atoms.set_momenta(momenta, apply_constraint=True)
-    if force_temp:
+    if exact_temperature:
         force_temperature(atoms, temperature=temp, unit='eV')
 
 

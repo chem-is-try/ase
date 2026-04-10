@@ -56,7 +56,7 @@ def equilibrate(atoms, dynamicsparams):
     rng = np.random.RandomState(42)
     # Must be small enough that we can see the an off-by-one error
     # in the energy
-    init_momenta(atoms, 300.0, force_temp=True, rng=rng)
+    init_momenta(atoms, 300.0, exact_temperature=True, rng=rng)
     Stationary(atoms)
     assert atoms.get_temperature() == pytest.approx(300, abs=0.0001)
     with NPTBerendsen(

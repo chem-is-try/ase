@@ -89,7 +89,7 @@ def test_md(cp2k_factory):
     atoms = Atoms('HH', positions=positions, calculator=calc)
     atoms.center(vacuum=2.0)
 
-    init_momenta(atoms, 0.5 * 300.0, force_temp=True)
+    init_momenta(atoms, 0.5 * 300.0, exact_temperature=True)
     energy_start = atoms.get_potential_energy() + atoms.get_kinetic_energy()
     with VelocityVerlet(atoms, 0.5 * units.fs) as dyn:
         dyn.run(20)
