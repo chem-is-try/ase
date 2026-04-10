@@ -220,50 +220,18 @@ def read_espresso_out(fileobj, index=slice(None), results_required=True):
             structure = Atoms(symbols=symbols, positions=positions, cell=cell,
                               pbc=True)
 
-        # Extract calculation results
-        # Energy
-        energy = None
-        for energy_index in indexes[_PW_TOTEN]:
-            if image_index < energy_index < next_index:
-                energy = float(
-                    pwo_lines[energy_index].split()[-2]) * units['Ry']
+        def find_thing(get_thing, indices, **kwargs):
+            for index in indices:
+                if image_index < index < next_index:
+                    return get_thing(pwo_lines, index, **kwargs)
+            return None
 
-        # Forces
-        forces = None
-        for force_index in indexes[_PW_FORCE]:
-            if image_index < force_index < next_index:
-                # Before QE 5.3 'negative rho' added 2 lines before forces
-                # Use exact lines to stop before 'non-local' forces
-                # in high verbosity
-                if not pwo_lines[force_index + 2].strip():
-                    force_index += 4
-                else:
-                    force_index += 2
-                # assume contiguous
-                forces = [
-                    [float(x) for x in force_line.split()[-3:]] for force_line
-                    in pwo_lines[force_index:force_index + len(structure)]]
-                forces = np.array(forces) * units['Ry'] / units['Bohr']
+        natoms = len(structure)
 
-        # Stress
-        stress = None
-        for stress_index in indexes[_PW_STRESS]:
-            if image_index < stress_index < next_index:
-                sxx, sxy, sxz = pwo_lines[stress_index + 1].split()[:3]
-                _, syy, syz = pwo_lines[stress_index + 2].split()[:3]
-                _, _, szz = pwo_lines[stress_index + 3].split()[:3]
-                stress = np.array([sxx, syy, szz, syz, sxz, sxy], dtype=float)
-                # sign convention is opposite of ase
-                stress *= -1 * units['Ry'] / (units['Bohr'] ** 3)
-
-        # Magmoms
-        magmoms = None
-        for magmoms_index in indexes[_PW_MAGMOM]:
-            if image_index < magmoms_index < next_index:
-                magmoms = [
-                    float(mag_line.split()[-1]) for mag_line
-                    in pwo_lines[magmoms_index + 1:
-                                 magmoms_index + 1 + len(structure)]]
+        energy = find_thing(get_energy, indexes[_PW_TOTEN])
+        forces = find_thing(get_forces, indexes[_PW_FORCE], natoms=natoms)
+        stress = find_thing(get_stress, indexes[_PW_STRESS])
+        magmoms = find_thing(get_magmoms, indexes[_PW_MAGMOM], natoms=natoms)
 
         # Dipole moment
         dipole = None
@@ -2086,3 +2054,39 @@ def namelist_to_string(input_parameters):
         pwi.append('/\n')  # terminate section
     pwi.append('\n')
     return pwi
+
+
+def get_energy(pwo_lines, energy_index):
+    return float(pwo_lines[energy_index].split()[-2]) * units['Ry']
+
+
+def get_forces(pwo_lines, force_index, natoms):
+    # Before QE 5.3 'negative rho' added 2 lines before forces
+    # Use exact lines to stop before 'non-local' forces
+    # in high verbosity
+    if not pwo_lines[force_index + 2].strip():
+        force_index += 4
+    else:
+        force_index += 2
+    # assume contiguous
+    forces = [
+        [float(x) for x in force_line.split()[-3:]] for force_line
+        in pwo_lines[force_index:force_index + natoms]]
+    return np.array(forces) * units['Ry'] / units['Bohr']
+
+
+def get_stress(pwo_lines, stress_index):
+    sxx, sxy, sxz = pwo_lines[stress_index + 1].split()[:3]
+    _, syy, syz = pwo_lines[stress_index + 2].split()[:3]
+    _, _, szz = pwo_lines[stress_index + 3].split()[:3]
+    stress = np.array([sxx, syy, szz, syz, sxz, sxy], dtype=float)
+    # sign convention is opposite of ase
+    stress *= -1 * units['Ry'] / (units['Bohr'] ** 3)
+    return stress
+
+
+def get_magmoms(pwo_lines, magmoms_index, natoms):
+    return [
+        float(mag_line.split()[-1]) for mag_line
+        in pwo_lines[magmoms_index + 1:
+                     magmoms_index + 1 + natoms]]
