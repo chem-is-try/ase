@@ -1,5 +1,5 @@
-# fmt: off
 """Tests for FixCom."""
+
 import numpy as np
 import pytest
 
@@ -11,7 +11,7 @@ from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 from ase.optimize import BFGS
 
 
-@pytest.fixture(name="atoms")
+@pytest.fixture(name='atoms')
 def fixture_atoms() -> Atoms:
     """fixture_atoms"""
     atoms = molecule('H2O')
