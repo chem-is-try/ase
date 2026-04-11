@@ -1,4 +1,3 @@
-# fmt: off
 import pytest
 
 from ase.constraints import FixAtoms
@@ -13,18 +12,18 @@ from ase.units import kB
 
 def test_maxwellboltzmann():
 
-    atoms = FaceCenteredCubic(size=(50, 50, 50), symbol="Cu", pbc=False)
-    print("Number of atoms:", len(atoms))
+    atoms = FaceCenteredCubic(size=(50, 50, 50), symbol='Cu', pbc=False)
+    print('Number of atoms:', len(atoms))
     MaxwellBoltzmannDistribution(atoms, temperature_K=0.1 / kB)
     temp = atoms.get_kinetic_energy() / (1.5 * len(atoms))
 
-    print("Temperature", temp, " (should be 0.1)")
+    print('Temperature', temp, ' (should be 0.1)')
     assert abs(temp - 0.1) < 1e-3
 
 
 def test_maxwellboltzmann_dof():
 
-    atoms = FaceCenteredCubic(size=(50, 50, 50), symbol="Cu", pbc=False)
+    atoms = FaceCenteredCubic(size=(50, 50, 50), symbol='Cu', pbc=False)
     atoms.set_constraint(FixAtoms(range(250000)))
 
     MaxwellBoltzmannDistribution(atoms, temperature_K=1000)
