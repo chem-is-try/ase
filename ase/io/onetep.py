@@ -591,8 +591,6 @@ def read_onetep_out(fd, index=-1, improving=False, **kwargs):
     fdo_lines = fd.readlines()
     n_lines = len(fdo_lines)
 
-    freg = re.compile(r'-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+\-]?\d+)?')
-
     # Used to store index of important elements
     output = {
         ONETEP_START: [],
@@ -765,223 +763,42 @@ def read_onetep_out(fd, index=-1, improving=False, **kwargs):
         new_indices = np.setdiff1d(np.arange(n_pos), to_del)
         ipositions = ipositions[new_indices]
 
-    # Bunch of methods to grep properties from output.
-    def parse_cell(idx):
-        a, b, c = np.loadtxt([fdo_lines[idx + 2]]) * units['Bohr']
-        al, be, ga = np.loadtxt([fdo_lines[idx + 4]])
-        cell = Cell.fromcellpar([a, b, c, al, be, ga])
-        return np.array(cell)
-
-    def parse_charge(idx):
-        n = 0
-        offset = 4
-        while idx + n < len(fdo_lines):
-            if not fdo_lines[idx + n].strip():
-                tmp_charges = np.loadtxt(
-                    fdo_lines[idx + offset : idx + n - 1], usecols=3
-                )
-                return np.reshape(tmp_charges, -1)
-            n += 1
-        return None
-
-    #  In ONETEP there is no way to differentiate electronic entropy
-    #  and entropy due to solvent, therefore there is no way to
-    # extrapolate the energy at 0 K. We return the last energy
-    #  instead.
-
-    def parse_energy(idx):
-        n = 0
-        while idx + n < len(fdo_lines):
-            if re.search(r'^\s*\|\s*Total\s*:.*\|\s*$', fdo_lines[idx + n]):
-                energy_str = re.search(freg, fdo_lines[idx + n]).group(0)
-                return float(energy_str) * units['Hartree']
-            n += 1
-        return None
-
-    def parse_first_cell(idx):
-        n = 0
-        offset = 1
-        while idx + n < len(fdo_lines):
-            if re.search(
-                r'(?i)^\s*"?\s*ang\s*"?\s*([*#!].*)?$', fdo_lines[idx + n]
-            ):
-                offset += 1
-            if re.search(
-                r'(?i)^\s*%ENDBLOCK\s*LATTICE'
-                r'\s*_?\s*CART\s*:?\s*([*#!].*)?$',
-                fdo_lines[idx + n],
-            ):
-                cell = np.loadtxt(fdo_lines[idx + offset : idx + n])
-                return cell if offset == 2 else cell * units['Bohr']
-            n += 1
-        return None
-
-    def parse_first_positions(idx):
-        n = 0
-        offset = 1
-        while idx + n < len(fdo_lines):
-            if re.search(
-                r'(?i)^\s*"?\s*ang\s*"?\s*([*#!].*)?$', fdo_lines[idx + n]
-            ):
-                offset += 1
-            if re.search(r'^\s*%ENDBLOCK\s*POSITIONS_', fdo_lines[idx + n]):
-                if 'FRAC' in fdo_lines[idx + n]:
-                    conv_factor = 1
-                else:
-                    conv_factor = units['Bohr']
-                tmp = np.loadtxt(
-                    fdo_lines[idx + offset : idx + n], dtype='str'
-                ).reshape(-1, 4)
-                els = np.char.array(tmp[:, 0])
-                if offset == 2:
-                    pos = tmp[:, 1:].astype(np.float64)
-                else:
-                    pos = tmp[:, 1:].astype(np.float64) * conv_factor
-                try:
-                    atoms = Atoms(els, pos)
-                # ASE doesn't recognize names used in ONETEP
-                # as chemical symbol: dig deeper
-                except KeyError:
-                    tags, real_elements = find_correct_species(
-                        els, idx, first=True
-                    )
-                    atoms = Atoms(real_elements, pos)
-                    atoms.set_tags(tags)
-                    atoms.info['onetep_species'] = list(els)
-                return atoms
-            n += 1
-        return None
-
-    def parse_force(idx):
-        n = 0
-        while idx + n < len(fdo_lines):
-            if re.search(r'(?i)^\s*\*\s*TOTAL:.*\*\s*$', fdo_lines[idx + n]):
-                tmp = np.loadtxt(
-                    fdo_lines[idx + 6 : idx + n - 2],
-                    dtype=np.float64,
-                    usecols=(3, 4, 5),
-                )
-                return tmp * units['Hartree'] / units['Bohr']
-            n += 1
-        return None
-
-    def parse_positions(idx):
-        n = 0
-        offset = 7
-        stop = 0
-        while idx + n < len(fdo_lines):
-            if re.search(r'^\s*x{60,}\s*$', fdo_lines[idx + n]):
-                stop += 1
-            if stop == 2:
-                tmp = np.loadtxt(
-                    fdo_lines[idx + offset : idx + n],
-                    dtype='str',
-                    usecols=(1, 3, 4, 5),
-                )
-                els = np.char.array(tmp[:, 0])
-                pos = tmp[:, 1:].astype(np.float64) * units['Bohr']
-                try:
-                    atoms = Atoms(els, pos)
-                # ASE doesn't recognize names used in ONETEP
-                # as chemical symbol: dig deeper
-                except KeyError:
-                    tags, real_elements = find_correct_species(els, idx)
-                    atoms = Atoms(real_elements, pos)
-                    atoms.set_tags(tags)
-                    atoms.info['onetep_species'] = list(els)
-                return atoms
-            n += 1
-        return None
-
-    def parse_species(idx):
-        n = 1
-        element_map = {}
-        while idx + n < len(fdo_lines):
-            sep = fdo_lines[idx + n].split()
-            if re.search(
-                r'(?i)^\s*%ENDBLOCK\s*SPECIES\s*:?\s*([*#!].*)?$',
-                fdo_lines[idx + n],
-            ):
-                return element_map
-            to_skip = re.search(
-                r'(?i)^\s*(ang|bohr)\s*([*#!].*)?$', fdo_lines[idx + n]
-            )
-            if not to_skip:
-                element_map[sep[0]] = sep[1]
-            n += 1
-        return None
-
-    def parse_spin(idx):
-        n = 0
-        offset = 4
-        while idx + n < len(fdo_lines):
-            if not fdo_lines[idx + n].strip():
-                # If no spin is present we return None
-                try:
-                    tmp_spins = np.loadtxt(
-                        fdo_lines[idx + offset : idx + n - 1], usecols=4
-                    )
-                    return np.reshape(tmp_spins, -1)
-                except ValueError:
-                    return None
-            n += 1
-        return None
-
-    # This is needed if ASE doesn't recognize the element
-    def find_correct_species(els, idx, first=False):
-        real_elements = []
-        tags = []
-        # Find nearest species block in case of
-        # multi-output file with different species blocks.
-        if first:
-            closest_species = np.argmin(abs(idx - species))
-        else:
-            tmp = idx - species
-            tmp[tmp < 0] = 9999999999
-            closest_species = np.argmin(tmp)
-        elements_map = real_species[closest_species]
-        for el in els:
-            real_elements.append(elements_map[el])
-            tag_maybe = el.replace(elements_map[el], '')
-            if tag_maybe.isdigit():
-                tags.append(int(tag_maybe))
-            else:
-                tags.append(False)
-        return tags, real_elements
+    helper = OnetepHelper(fdo_lines)
 
     cells = []
     for idx in icells:
         if idx in output[ONETEP_STRESS_CELL]:
-            cell = parse_cell(idx) if idx else None
+            cell = helper.parse_cell(idx) if idx else None
         else:
-            cell = parse_first_cell(idx) if idx else None
+            cell = helper.parse_first_cell(idx) if idx else None
         cells.append(cell)
 
     def parse_multiple(parsefunc, indices):
         return [parsefunc(idx) if idx else None for idx in indices]
 
-    charges = parse_multiple(parse_charge, output_corr[ONETEP_MULLIKEN])
-    energies = parse_multiple(parse_energy, output_corr[ONETEP_TOTAL_ENERGY])
-    magmoms = parse_multiple(parse_spin, output_corr[ONETEP_MULLIKEN])
+    charges = parse_multiple(helper.parse_charge, output_corr[ONETEP_MULLIKEN])
+    energies = parse_multiple(helper.parse_energy,
+                              output_corr[ONETEP_TOTAL_ENERGY])
+    magmoms = parse_multiple(helper.parse_spin, output_corr[ONETEP_MULLIKEN])
 
     real_species = []
     for idx in species:
-        real_specie = parse_species(idx)
+        real_specie = helper.parse_species(idx)
         real_species.append(real_specie)
 
     positions, forces = [], []
     for idx in ipositions:
         if idx in i_first_positions:
-            position = parse_first_positions(idx)
+            position = helper.parse_first_positions(idx, species, real_species)
         else:
-            position = parse_positions(idx)
+            position = helper.parse_positions(idx, species, real_species)
         if position:
             positions.append(position)
         else:
             n_pos -= 1
             break
     for idx in output_corr[ONETEP_FORCE]:
-        force = parse_force(idx) if idx else None
+        force = helper.parse_force(idx) if idx else None
         forces.append(force)
 
     n_pos = len(positions)
@@ -1059,3 +876,199 @@ def read_onetep_out(fd, index=-1, improving=False, **kwargs):
         # calc.kpts = [(0, 0, 0) for _ in range(spin[idx])]
         positions[idx].calc = calc
         yield positions[idx]
+
+
+class OnetepHelper:
+    def __init__(self, fdo_lines):
+        self.fdo_lines = fdo_lines
+
+    # Bunch of methods to grep properties from output.
+    def parse_cell(self, idx):
+        a, b, c = np.loadtxt([self.fdo_lines[idx + 2]]) * units['Bohr']
+        al, be, ga = np.loadtxt([self.fdo_lines[idx + 4]])
+        cell = Cell.fromcellpar([a, b, c, al, be, ga])
+        return np.array(cell)
+
+    def parse_charge(self, idx):
+        n = 0
+        offset = 4
+        while idx + n < len(self.fdo_lines):
+            if not self.fdo_lines[idx + n].strip():
+                tmp_charges = np.loadtxt(
+                    self.fdo_lines[idx + offset : idx + n - 1], usecols=3
+                )
+                return np.reshape(tmp_charges, -1)
+            n += 1
+        return None
+
+    #  In ONETEP there is no way to differentiate electronic entropy
+    #  and entropy due to solvent, therefore there is no way to
+    # extrapolate the energy at 0 K. We return the last energy
+    #  instead.
+
+    def parse_energy(self, idx):
+        freg = re.compile(r'-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+\-]?\d+)?')
+
+        n = 0
+        while idx + n < len(self.fdo_lines):
+            if re.search(r'^\s*\|\s*Total\s*:.*\|\s*$',
+                         self.fdo_lines[idx + n]):
+                energy_str = re.search(freg, self.fdo_lines[idx + n]).group(0)
+                return float(energy_str) * units['Hartree']
+            n += 1
+        return None
+
+    def parse_first_cell(self, idx):
+        n = 0
+        offset = 1
+        while idx + n < len(self.fdo_lines):
+            if re.search(
+                r'(?i)^\s*"?\s*ang\s*"?\s*([*#!].*)?$', self.fdo_lines[idx + n]
+            ):
+                offset += 1
+            if re.search(
+                r'(?i)^\s*%ENDBLOCK\s*LATTICE'
+                r'\s*_?\s*CART\s*:?\s*([*#!].*)?$',
+                self.fdo_lines[idx + n],
+            ):
+                cell = np.loadtxt(self.fdo_lines[idx + offset : idx + n])
+                return cell if offset == 2 else cell * units['Bohr']
+            n += 1
+        return None
+
+    def parse_first_positions(self, idx, species, real_species):
+        n = 0
+        offset = 1
+        while idx + n < len(self.fdo_lines):
+            if re.search(
+                r'(?i)^\s*"?\s*ang\s*"?\s*([*#!].*)?$', self.fdo_lines[idx + n]
+            ):
+                offset += 1
+            if re.search(r'^\s*%ENDBLOCK\s*POSITIONS_',
+                         self.fdo_lines[idx + n]):
+                if 'FRAC' in self.fdo_lines[idx + n]:
+                    conv_factor = 1
+                else:
+                    conv_factor = units['Bohr']
+                tmp = np.loadtxt(
+                    self.fdo_lines[idx + offset : idx + n], dtype='str'
+                ).reshape(-1, 4)
+                els = np.char.array(tmp[:, 0])
+                if offset == 2:
+                    pos = tmp[:, 1:].astype(np.float64)
+                else:
+                    pos = tmp[:, 1:].astype(np.float64) * conv_factor
+                try:
+                    atoms = Atoms(els, pos)
+                # ASE doesn't recognize names used in ONETEP
+                # as chemical symbol: dig deeper
+                except KeyError:
+                    tags, real_elements = self.find_correct_species(
+                        els, idx, species, real_species, first=True
+                    )
+                    atoms = Atoms(real_elements, pos)
+                    atoms.set_tags(tags)
+                    atoms.info['onetep_species'] = list(els)
+                return atoms
+            n += 1
+        return None
+
+    def parse_force(self, idx):
+        n = 0
+        while idx + n < len(self.fdo_lines):
+            if re.search(r'(?i)^\s*\*\s*TOTAL:.*\*\s*$',
+                         self.fdo_lines[idx + n]):
+                tmp = np.loadtxt(
+                    self.fdo_lines[idx + 6 : idx + n - 2],
+                    dtype=np.float64,
+                    usecols=(3, 4, 5),
+                )
+                return tmp * units['Hartree'] / units['Bohr']
+            n += 1
+        return None
+
+    def parse_positions(self, idx, species, real_species):
+        n = 0
+        offset = 7
+        stop = 0
+        while idx + n < len(self.fdo_lines):
+            if re.search(r'^\s*x{60,}\s*$', self.fdo_lines[idx + n]):
+                stop += 1
+            if stop == 2:
+                tmp = np.loadtxt(
+                    self.fdo_lines[idx + offset : idx + n],
+                    dtype='str',
+                    usecols=(1, 3, 4, 5),
+                )
+                els = np.char.array(tmp[:, 0])
+                pos = tmp[:, 1:].astype(np.float64) * units['Bohr']
+                try:
+                    atoms = Atoms(els, pos)
+                # ASE doesn't recognize names used in ONETEP
+                # as chemical symbol: dig deeper
+                except KeyError:
+                    tags, real_elements = self.find_correct_species(
+                        els, idx, species, real_species)
+                    atoms = Atoms(real_elements, pos)
+                    atoms.set_tags(tags)
+                    atoms.info['onetep_species'] = list(els)
+                return atoms
+            n += 1
+        return None
+
+    def parse_species(self, idx):
+        n = 1
+        element_map = {}
+        while idx + n < len(self.fdo_lines):
+            sep = self.fdo_lines[idx + n].split()
+            if re.search(
+                r'(?i)^\s*%ENDBLOCK\s*SPECIES\s*:?\s*([*#!].*)?$',
+                self.fdo_lines[idx + n],
+            ):
+                return element_map
+            to_skip = re.search(
+                r'(?i)^\s*(ang|bohr)\s*([*#!].*)?$', self.fdo_lines[idx + n]
+            )
+            if not to_skip:
+                element_map[sep[0]] = sep[1]
+            n += 1
+        return None
+
+    def parse_spin(self, idx):
+        n = 0
+        offset = 4
+        while idx + n < len(self.fdo_lines):
+            if not self.fdo_lines[idx + n].strip():
+                # If no spin is present we return None
+                try:
+                    tmp_spins = np.loadtxt(
+                        self.fdo_lines[idx + offset : idx + n - 1], usecols=4
+                    )
+                    return np.reshape(tmp_spins, -1)
+                except ValueError:
+                    return None
+            n += 1
+        return None
+
+    # This is needed if ASE doesn't recognize the element
+    def find_correct_species(self, els, idx, species, real_species,
+                             first=False):
+        real_elements = []
+        tags = []
+        # Find nearest species block in case of
+        # multi-output file with different species blocks.
+        if first:
+            closest_species = np.argmin(abs(idx - species))
+        else:
+            tmp = idx - species
+            tmp[tmp < 0] = 9999999999
+            closest_species = np.argmin(tmp)
+        elements_map = real_species[closest_species]
+        for el in els:
+            real_elements.append(elements_map[el])
+            tag_maybe = el.replace(elements_map[el], '')
+            if tag_maybe.isdigit():
+                tags.append(int(tag_maybe))
+            else:
+                tags.append(False)
+        return tags, real_elements
