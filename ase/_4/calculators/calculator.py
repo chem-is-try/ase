@@ -8,9 +8,9 @@ from typing import Any
 from ase import Atoms as V3Atoms
 from ase._4.calculators.results import CalculationResults
 from ase.calculators.calculator import BaseCalculator as V3BaseCalculator
-from ase.calculators.calculator import (  # noqa: F401
+from ase.calculators.calculator import (
     Parameters,
-    all_properties,
+    all_properties,  # noqa: F401
     equal,
 )
 
@@ -33,10 +33,9 @@ class BaseCalculator(ABC):
             parameters = {}
 
         self.parameters = dict(parameters)
-        self.atoms = None
 
     @abstractmethod
-    def evaluate(self, atoms, properties) -> CalculationResults: ...
+    def evaluate(self, atoms, properties): ...
 
     def _get_name(self) -> str:  # child class can override this
         return self.__class__.__name__.lower()
@@ -218,7 +217,7 @@ class Calculator(BaseCalculator):
     # of the behavirour unchanged. But ase3 calculator needs
     # to check whether the parameters have changed before updating
     # so that the calculator may be reset. How should that be
-    # handled in the ASEv4 + ASEv3Mixin split during the transition?
+    # handled in the ASEv4 + Version3Adaptor during the transition?
     def set_check_parameter_changes(self, **kwargs):
         """Set parameters like set(key1=value1, key2=value2, ...).
 
@@ -245,7 +244,7 @@ class Calculator(BaseCalculator):
         # also returned by the transition class
         return changed_parameters
 
-    def evaluate(self, atoms, properties=['energy']) -> CalculationResults:
+    def evaluate(self, atoms, properties=None):
         """Use the calculator to evaluate the structure and obtain properties.
 
         atoms: Atoms
@@ -263,6 +262,9 @@ class Calculator(BaseCalculator):
         implementation to set the atoms attribute and create any missing
         directories.
         """
+        if properties is None:
+            properties = ["energy"]
+
         if not os.path.isdir(self._directory):
             try:
                 os.makedirs(self._directory)
@@ -311,9 +313,17 @@ class Version4Adaptor(BaseCalculator):
     def __init__(self, *args, **kwargs):
         self._v3_calculator = self.wrapped_class(*args, **kwargs)
 
+    @property
+    def parameters(self):
+        return self._v3_calculator.parameters
+
     def evaluate(
-        self, atoms: V3Atoms, properties: list[str] = ['energy']
+        self, atoms: V3Atoms, properties: list[str] | None = None
     ) -> CalculationResults:
+
+        if properties is None:
+            properties = ["energy"]
+
         # enforce no modification of the input atoms
         atoms = atoms.copy()
         self._v3_calculator.calculate(atoms=atoms, properties=properties)

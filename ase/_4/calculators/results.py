@@ -16,7 +16,7 @@ class CalculationResults:
     and assumes that Atoms.store(CalculationResults) will write the
     properties to Atoms.info and Atoms.arrays.
 
-    Storred data is immutable - setter functions don't allow overwriting
+    Stored data is immutable - setter functions don't allow overwriting
     non-empty attributes and getter functions return a read-only proxy.
 
     Parameters
