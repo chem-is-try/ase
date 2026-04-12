@@ -54,8 +54,9 @@ class Calculator(BaseCalculator):
 
     A calculator must raise PropertyNotImplementedError if asked for a
     property that it can't calculate.  So, if calculation of the
-    stress tensor has not been implemented, get_stress(atoms) should
-    raise PropertyNotImplementedError.  This can be achieved simply by not
+    stress tensor has not been implemented, 
+    evaluate(atoms, properties=["stress"]) should raise 
+    PropertyNotImplementedError.  This can be achieved simply by not
     including the string 'stress' in the list implemented_properties
     which is a class member.  These are the names of the standard
     properties: 'energy', 'forces', 'stress', 'dipole', 'charges',
@@ -190,10 +191,17 @@ class Calculator(BaseCalculator):
             dct[key] = value
         return dct
 
+    # EG: How should restarts work in v4? 
+    # It might be thought of as a type of caching, in which case it 
+    # shouldn't be part of v4 calculators and be its own function, 
+    # for example. Or an input to .evaluate . 
+    # Sticking with the original for now. 
     def read(self, label):
-        """Read atoms, parameters and calculated properties from output file.
+        """To be updated or deprecated. 
 
-        Read result from self.label file.  Raise ReadError if the file
+        Read atoms, parameters and calculated properties from output file.
+
+        Read result from self.label file. Raise ReadError if the file
         is not there.  If the file is corrupted or contains an error
         message from the calculation, a ReadError should also be
         raised.  In case of success, these attributes must set:
@@ -202,7 +210,7 @@ class Calculator(BaseCalculator):
             The state of the atoms from last calculation.
         parameters: Parameters object
             The parameter dictionary.
-        results: dict
+        results: CalculationResults 
             Calculated properties like energy and forces.
 
         The FileIOCalculator.read() method will typically read atoms
@@ -259,8 +267,7 @@ class Calculator(BaseCalculator):
         be returned as a CalculationResults object.
 
         The subclass implementation should first call this
-        implementation to set the atoms attribute and create any missing
-        directories.
+        implementation to create any missing directories.
         """
         if properties is None:
             properties = ["energy"]
