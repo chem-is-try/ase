@@ -5,12 +5,10 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any
 
-import numpy as np
-
 from ase import Atoms as V3Atoms
 from ase._4.calculators.results import CalculationResults
 from ase.calculators.calculator import BaseCalculator as V3BaseCalculator
-from ase.calculators.calculator import all_properties, equal
+from ase.calculators.calculator import all_properties, equal  # noqa: F401
 
 special = {
     'emt': 'EMT',
@@ -89,7 +87,7 @@ class BaseCalculator(ABC):
         self.atoms = None
 
     @abstractmethod
-    def evaluate(self, atoms, properties): ...
+    def evaluate(self, atoms, properties) -> CalculationResults: ...
 
     def _get_name(self) -> str:  # child class can override this
         return self.__class__.__name__.lower()
@@ -219,7 +217,8 @@ class Calculator(BaseCalculator):
     def set_label(self, label):
         """Set label and convert label to directory and prefix.
 
-        Examples:
+        Examples
+        --------
 
         * label='abc': (directory='.', prefix='abc')
         * label='dir1/abc': (directory='dir1', prefix='abc')
@@ -297,7 +296,7 @@ class Calculator(BaseCalculator):
         # also returned by the transition class
         return changed_parameters
 
-    def evaluate(self, atoms, properties=['energy']):
+    def evaluate(self, atoms, properties=['energy']) -> CalculationResults:
         """Use the calculator to evaluate the structure and obtain properties.
 
         atoms: Atoms
