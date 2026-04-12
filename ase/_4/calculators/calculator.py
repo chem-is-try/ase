@@ -8,66 +8,15 @@ from typing import Any
 from ase import Atoms as V3Atoms
 from ase._4.calculators.results import CalculationResults
 from ase.calculators.calculator import BaseCalculator as V3BaseCalculator
-from ase.calculators.calculator import all_properties, equal  # noqa: F401
+from ase.calculators.calculator import (  # noqa: F401
+    Parameters,
+    all_properties,
+    equal,
+)
 
 special = {
     'emt': 'EMT',
 }
-
-
-class Parameters(dict):
-    """Dictionary for parameters.
-
-    Special feature: If param is a Parameters instance, then param.xc
-    is a shorthand for param['xc'].
-    """
-
-    def __getattr__(self, key):
-        if key not in self:
-            return dict.__getattribute__(self, key)
-        return self[key]
-
-    def __setattr__(self, key, value):
-        self[key] = value
-
-    @classmethod
-    def read(cls, filename):
-        """Read parameters from file."""
-        # We use ast to evaluate literals, avoiding eval()
-        # for security reasons.
-        import ast
-
-        with open(filename) as fd:
-            txt = fd.read().strip()
-        assert txt.startswith('dict(')
-        assert txt.endswith(')')
-        txt = txt[5:-1]
-
-        # The tostring() representation "dict(...)" is not actually
-        # a literal, so we manually parse that along with the other
-        # formatting that we did manually:
-        dct = {}
-        for line in txt.splitlines():
-            key, val = line.split('=', 1)
-            key = key.strip()
-            val = val.strip()
-            if val[-1] == ',':
-                val = val[:-1]
-            dct[key] = ast.literal_eval(val)
-
-        parameters = cls(dct)
-        return parameters
-
-    def tostring(self):
-        keys = sorted(self)
-        return (
-            'dict('
-            + ',\n     '.join(f'{key}={self[key]!r}' for key in keys)
-            + ')\n'
-        )
-
-    def write(self, filename):
-        Path(filename).write_text(self.tostring())
 
 
 class BaseCalculator(ABC):
