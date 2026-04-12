@@ -54,8 +54,8 @@ class Calculator(BaseCalculator):
 
     A calculator must raise PropertyNotImplementedError if asked for a
     property that it can't calculate.  So, if calculation of the
-    stress tensor has not been implemented, 
-    evaluate(atoms, properties=["stress"]) should raise 
+    stress tensor has not been implemented,
+    evaluate(atoms, properties=["stress"]) should raise
     PropertyNotImplementedError.  This can be achieved simply by not
     including the string 'stress' in the list implemented_properties
     which is a class member.  These are the names of the standard
@@ -191,13 +191,13 @@ class Calculator(BaseCalculator):
             dct[key] = value
         return dct
 
-    # EG: How should restarts work in v4? 
-    # It might be thought of as a type of caching, in which case it 
-    # shouldn't be part of v4 calculators and be its own function, 
-    # for example. Or an input to .evaluate . 
-    # Sticking with the original for now. 
+    # EG: How should restarts work in v4?
+    # It might be thought of as a type of caching, in which case it
+    # shouldn't be part of v4 calculators and be its own function,
+    # for example. Or an input to .evaluate .
+    # Sticking with the original for now.
     def read(self, label):
-        """To be updated or deprecated. 
+        """To be updated or deprecated.
 
         Read atoms, parameters and calculated properties from output file.
 
@@ -210,7 +210,7 @@ class Calculator(BaseCalculator):
             The state of the atoms from last calculation.
         parameters: Parameters object
             The parameter dictionary.
-        results: CalculationResults 
+        results: CalculationResults
             Calculated properties like energy and forces.
 
         The FileIOCalculator.read() method will typically read atoms
@@ -270,7 +270,7 @@ class Calculator(BaseCalculator):
         implementation to create any missing directories.
         """
         if properties is None:
-            properties = ["energy"]
+            properties = ['energy']
 
         if not os.path.isdir(self._directory):
             try:
@@ -329,7 +329,7 @@ class Version4Adaptor(BaseCalculator):
     ) -> CalculationResults:
 
         if properties is None:
-            properties = ["energy"]
+            properties = ['energy']
 
         # enforce no modification of the input atoms
         atoms = atoms.copy()

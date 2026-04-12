@@ -10,7 +10,6 @@ from ase._4.calculators.emt import EMT
 from ase.build import bulk
 from ase.outputs import Properties
 
-
 # ---------------------------
 # CalculationResults fixtures
 # ---------------------------
@@ -49,6 +48,7 @@ def properties(
 # ---------------------
 # v4Calculator fixtures
 # ---------------------
+
 
 @pytest.fixture
 def atoms() -> V3Atoms:

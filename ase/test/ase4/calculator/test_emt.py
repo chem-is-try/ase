@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def test_emt(atoms, calculator):
     properties = ['energy', 'energies', 'free_energy', 'forces', 'stress']
     results = calculator.evaluate(atoms, properties=properties)
