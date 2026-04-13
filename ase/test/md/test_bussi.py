@@ -4,8 +4,8 @@ import pytest
 from ase import units
 from ase.build import bulk
 from ase.calculators.emt import EMT
+from ase.md import thermalize_momenta
 from ase.md.bussi import Bussi
-from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 
 
 def test_bussi():
@@ -16,9 +16,7 @@ def test_bussi():
         with Bussi(atoms, 0.1 * units.fs, 300, 100 * units.fs) as dyn:
             dyn.run(1)
 
-    MaxwellBoltzmannDistribution(
-        atoms, temperature_K=300, rng=np.random.default_rng(seed=42)
-    )
+    thermalize_momenta(atoms, 300.0, rng=np.random.default_rng(seed=42))
 
     with Bussi(
         atoms,
@@ -41,9 +39,7 @@ def test_bussi_transfered_energy_conservation():
 
     atoms.calc = EMT()
 
-    MaxwellBoltzmannDistribution(
-        atoms, temperature_K=300, rng=np.random.default_rng(seed=42)
-    )
+    thermalize_momenta(atoms, 300.0, rng=np.random.default_rng(seed=42))
 
     conserved_quantity = []
 
@@ -80,12 +76,8 @@ def test_bussi_paranoia_check():
 
     atoms.calc = EMT()
 
-    MaxwellBoltzmannDistribution(
-        atoms,
-        temperature_K=300,
-        rng=np.random.default_rng(seed=10),
-        force_temp=True,
-    )
+    rng = np.random.default_rng(seed=10)
+    thermalize_momenta(atoms, 300.0, rng=rng, exact_temperature=True)
 
     temperatures = []
 
@@ -109,12 +101,8 @@ def test_bussi_paranoia_check2():
 
     atoms.calc = EMT()
 
-    MaxwellBoltzmannDistribution(
-        atoms,
-        temperature_K=300,
-        rng=np.random.default_rng(seed=91),
-        force_temp=True,
-    )
+    rng = np.random.default_rng(seed=91)
+    thermalize_momenta(atoms, 300.0, rng=rng, exact_temperature=True)
 
     temperatures = []
 
