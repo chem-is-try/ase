@@ -228,10 +228,10 @@ def read_espresso_out(fileobj, index=slice(None), results_required=True):
 
         natoms = len(structure)
 
-        energy = find_thing(get_energy, indexes[_PW_TOTEN])
-        forces = find_thing(get_forces, indexes[_PW_FORCE], natoms=natoms)
-        stress = find_thing(get_stress, indexes[_PW_STRESS])
-        magmoms = find_thing(get_magmoms, indexes[_PW_MAGMOM], natoms=natoms)
+        energy = find_thing(_get_energy, indexes[_PW_TOTEN])
+        forces = find_thing(_get_forces, indexes[_PW_FORCE], natoms=natoms)
+        stress = find_thing(_get_stress, indexes[_PW_STRESS])
+        magmoms = find_thing(_get_magmoms, indexes[_PW_MAGMOM], natoms=natoms)
 
         # Dipole moment
         dipole = None
@@ -2069,11 +2069,11 @@ def namelist_to_string(input_parameters):
     return pwi
 
 
-def get_energy(pwo_lines, energy_index):
+def _get_energy(pwo_lines, energy_index):
     return float(pwo_lines[energy_index].split()[-2]) * units['Ry']
 
 
-def get_forces(pwo_lines, force_index, natoms):
+def _get_forces(pwo_lines, force_index, natoms):
     # Before QE 5.3 'negative rho' added 2 lines before forces
     # Use exact lines to stop before 'non-local' forces
     # in high verbosity
@@ -2088,7 +2088,7 @@ def get_forces(pwo_lines, force_index, natoms):
     return np.array(forces) * units['Ry'] / units['Bohr']
 
 
-def get_stress(pwo_lines, stress_index):
+def _get_stress(pwo_lines, stress_index):
     sxx, sxy, sxz = pwo_lines[stress_index + 1].split()[:3]
     _, syy, syz = pwo_lines[stress_index + 2].split()[:3]
     _, _, szz = pwo_lines[stress_index + 3].split()[:3]
@@ -2098,7 +2098,7 @@ def get_stress(pwo_lines, stress_index):
     return stress
 
 
-def get_magmoms(pwo_lines, magmoms_index, natoms):
+def _get_magmoms(pwo_lines, magmoms_index, natoms):
     return [
         float(mag_line.split()[-1]) for mag_line
         in pwo_lines[magmoms_index + 1:
