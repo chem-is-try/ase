@@ -763,7 +763,7 @@ def read_onetep_out(fd, index=-1, improving=False, **kwargs):
         new_indices = np.setdiff1d(np.arange(n_pos), to_del)
         ipositions = ipositions[new_indices]
 
-    helper = OnetepHelper(fdo_lines)
+    helper = _OnetepHelper(fdo_lines)
 
     cells = []
     for idx in icells:
@@ -878,7 +878,7 @@ def read_onetep_out(fd, index=-1, improving=False, **kwargs):
         yield positions[idx]
 
 
-class OnetepHelper:
+class _OnetepHelper:
     def __init__(self, fdo_lines):
         self.fdo_lines = fdo_lines
 
