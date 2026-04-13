@@ -14,6 +14,7 @@ import numpy as np
 from ase import Atoms, units
 from ase.md.md import process_temperature
 from ase.parallel import DummyMPI, world
+from ase.utils import deprecated
 
 # define a ``zero'' temperature to avoid divisions by zero
 eps_temp = 1e-12
@@ -94,11 +95,11 @@ def _maxwellboltzmanndistribution(masses, temp, comm=world, rng=None):
     return momenta
 
 
+@deprecated('Use thermalize_momenta', DeprecationWarning)
 def MaxwellBoltzmannDistribution(
     atoms: Atoms,
-    temp: float | None = None,
     *,
-    temperature_K: float | None = None,
+    temperature_K: float,
     comm=world,
     communicator=None,
     force_temp: bool = False,
@@ -106,13 +107,16 @@ def MaxwellBoltzmannDistribution(
 ):
     """Set the atomic momenta to a Maxwell-Boltzmann distribution.
 
+    .. versionremoved:: 3.29.0
+        The ``temp`` argument is removed. Use ``temperature_K`` instead.
+
+    .. deprecated:: 3.29.0
+        Use :func:`thermalize_momenta` instead.
+
     Parameters
     ----------
     atoms: Atoms object
         The atoms.  Their momenta will be modified.
-
-    temp: float (deprecated)
-        The temperature in eV.  Deprecated, use ``temperature_K`` instead.
 
     temperature_K: float
         The temperature in Kelvin.
@@ -153,11 +157,56 @@ def MaxwellBoltzmannDistribution(
         )
         warnings.warn(msg, FutureWarning)
         comm = DummyMPI()
-    temp = units.kB * process_temperature(temp, temperature_K, 'eV')
+    thermalize_momenta(
+        atoms,
+        temperature_K,
+        comm=comm,
+        exact_temperature=force_temp,
+        rng=rng,
+    )
+
+
+def thermalize_momenta(
+    atoms: Atoms,
+    temperature_K: float,
+    *,
+    comm=world,
+    exact_temperature: bool = False,
+    rng=None,
+) -> None:
+    """Set the atomic momenta to a Maxwell-Boltzmann distribution.
+
+    See :func:`MaxwellBoltzmannDistribution` for details of parameters.
+
+    .. versionadded:: 3.29.0
+
+    Parameters
+    ----------
+    atoms: Atoms object
+        The atoms.  Their momenta will be modified.
+
+    temperature_K: float
+        The temperature in Kelvin.
+
+    comm: MPI communicator, default: :data:`ase.parallel.world`
+        Communicator used to distribute an identical distribution to all tasks.
+
+    exact_temperature: bool, default: False
+        If True, the random momenta are rescaled so the kinetic energy is
+        exactly 3/2 N k T.  This is a slight deviation from the correct
+        Maxwell-Boltzmann distribution.
+
+    rng: Numpy RNG (optional)
+        Random number generator.  Default: numpy.random
+        If you would like to always get the identical distribution, you can
+        supply a random seed like ``rng=numpy.random.RandomState(seed)``, where
+        seed is an integer.
+    """
+    temp = units.kB * temperature_K  # K -> eV
     masses = atoms.get_masses()
     momenta = _maxwellboltzmanndistribution(masses, temp, comm=comm, rng=rng)
-    atoms.set_momenta(momenta)
-    if force_temp:
+    atoms.set_momenta(momenta, apply_constraint=True)
+    if exact_temperature:
         force_temperature(atoms, temperature=temp, unit='eV')
 
 

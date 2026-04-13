@@ -9,6 +9,7 @@ import pytest
 import ase.build
 import ase.units
 from ase import Atoms
+from ase.md import thermalize_momenta
 from ase.md.nose_hoover_chain import (
     MTKNPT,
     IsotropicMTKBarostat,
@@ -18,7 +19,7 @@ from ase.md.nose_hoover_chain import (
     NoseHooverChainNVT,
     NoseHooverChainThermostat,
 )
-from ase.md.velocitydistribution import MaxwellBoltzmannDistribution, Stationary
+from ase.md.velocitydistribution import Stationary
 
 
 @pytest.fixture
@@ -240,10 +241,7 @@ def test_nose_hoover_chain_nvt(asap3, tchain: int):
 
     temperature_K = 300
     rng = np.random.default_rng(0)
-    MaxwellBoltzmannDistribution(
-        atoms,
-        temperature_K=temperature_K, force_temp=True, rng=rng
-    )
+    thermalize_momenta(atoms, temperature_K, exact_temperature=True, rng=rng)
     Stationary(atoms)
 
     timestep = 1.0 * ase.units.fs
@@ -269,10 +267,7 @@ def test_isotropic_mtk_npt(asap3, hcp_Cu: Atoms, tchain: int, pchain: int):
 
     temperature_K = 300
     rng = np.random.default_rng(0)
-    MaxwellBoltzmannDistribution(
-        atoms,
-        temperature_K=temperature_K, force_temp=True, rng=rng
-    )
+    thermalize_momenta(atoms, temperature_K, exact_temperature=True, rng=rng)
     Stationary(atoms)
 
     timestep = 1.0 * ase.units.fs
@@ -302,10 +297,7 @@ def test_anisotropic_npt(asap3, hcp_Cu: Atoms, tchain: int, pchain: int):
 
     temperature_K = 300
     rng = np.random.default_rng(0)
-    MaxwellBoltzmannDistribution(
-        atoms,
-        temperature_K=temperature_K, force_temp=True, rng=rng
-    )
+    thermalize_momenta(atoms, temperature_K, exact_temperature=True, rng=rng)
     Stationary(atoms)
 
     timestep = 1.0 * ase.units.fs
@@ -351,10 +343,7 @@ def test_masked_npt(
 
     temperature_K = 300
     rng = np.random.default_rng(0)
-    MaxwellBoltzmannDistribution(
-        atoms,
-        temperature_K=temperature_K, force_temp=True, rng=rng
-    )
+    thermalize_momenta(atoms, temperature_K, exact_temperature=True, rng=rng)
     Stationary(atoms)
 
     timestep = 1.0 * ase.units.fs
