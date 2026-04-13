@@ -777,8 +777,9 @@ def read_onetep_out(fd, index=-1, improving=False, **kwargs):
         return [parsefunc(idx) if idx else None for idx in indices]
 
     charges = parse_multiple(helper.parse_charge, output_corr[ONETEP_MULLIKEN])
-    energies = parse_multiple(helper.parse_energy,
-                              output_corr[ONETEP_TOTAL_ENERGY])
+    energies = parse_multiple(
+        helper.parse_energy, output_corr[ONETEP_TOTAL_ENERGY]
+    )
     magmoms = parse_multiple(helper.parse_spin, output_corr[ONETEP_MULLIKEN])
 
     real_species = []
@@ -911,8 +912,9 @@ class _OnetepHelper:
 
         n = 0
         while idx + n < len(self.fdo_lines):
-            if re.search(r'^\s*\|\s*Total\s*:.*\|\s*$',
-                         self.fdo_lines[idx + n]):
+            if re.search(
+                r'^\s*\|\s*Total\s*:.*\|\s*$', self.fdo_lines[idx + n]
+            ):
                 energy_str = re.search(freg, self.fdo_lines[idx + n]).group(0)
                 return float(energy_str) * units['Hartree']
             n += 1
@@ -944,8 +946,9 @@ class _OnetepHelper:
                 r'(?i)^\s*"?\s*ang\s*"?\s*([*#!].*)?$', self.fdo_lines[idx + n]
             ):
                 offset += 1
-            if re.search(r'^\s*%ENDBLOCK\s*POSITIONS_',
-                         self.fdo_lines[idx + n]):
+            if re.search(
+                r'^\s*%ENDBLOCK\s*POSITIONS_', self.fdo_lines[idx + n]
+            ):
                 if 'FRAC' in self.fdo_lines[idx + n]:
                     conv_factor = 1
                 else:
@@ -976,8 +979,9 @@ class _OnetepHelper:
     def parse_force(self, idx):
         n = 0
         while idx + n < len(self.fdo_lines):
-            if re.search(r'(?i)^\s*\*\s*TOTAL:.*\*\s*$',
-                         self.fdo_lines[idx + n]):
+            if re.search(
+                r'(?i)^\s*\*\s*TOTAL:.*\*\s*$', self.fdo_lines[idx + n]
+            ):
                 tmp = np.loadtxt(
                     self.fdo_lines[idx + 6 : idx + n - 2],
                     dtype=np.float64,
@@ -1008,7 +1012,8 @@ class _OnetepHelper:
                 # as chemical symbol: dig deeper
                 except KeyError:
                     tags, real_elements = self.find_correct_species(
-                        els, idx, species, real_species)
+                        els, idx, species, real_species
+                    )
                     atoms = Atoms(real_elements, pos)
                     atoms.set_tags(tags)
                     atoms.info['onetep_species'] = list(els)
@@ -1051,8 +1056,9 @@ class _OnetepHelper:
         return None
 
     # This is needed if ASE doesn't recognize the element
-    def find_correct_species(self, els, idx, species, real_species,
-                             first=False):
+    def find_correct_species(
+        self, els, idx, species, real_species, first=False
+    ):
         real_elements = []
         tags = []
         # Find nearest species block in case of
