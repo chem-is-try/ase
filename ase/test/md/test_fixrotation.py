@@ -1,4 +1,3 @@
-# fmt: off
 import numpy as np
 
 from ase.build import bulk
@@ -12,20 +11,21 @@ from ase.utils import seterr
 
 def check_inertia(atoms):
     m, v = atoms.get_moments_of_inertia(vectors=True)
-    print("Moments of inertia:")
+    print('Moments of inertia:')
     print(m)
     # There should be one vector in the z-direction
     n = 0
     delta = 1e-2
     for a in v:
-        if (abs(a[0]) < delta
+        if (
+            abs(a[0]) < delta
             and abs(a[1]) < delta
-                and abs(abs(a[2]) - 1.0) < delta):
-
-            print("Vector along z:", a)
+            and abs(abs(a[2]) - 1.0) < delta
+        ):
+            print('Vector along z:', a)
             n += 1
         else:
-            print("Vector not along z:", a)
+            print('Vector not along z:', a)
     assert n == 1
 
 
@@ -44,14 +44,14 @@ def test_fixrotation_asap(asap3):
         com = atoms.get_center_of_mass()
         atoms.set_constraint(FixCom())
         with Langevin(
-                atoms,
-                timestep=20 * fs,
-                temperature_K=300,
-                friction=1e-3,
-                logfile='-',
-                loginterval=500,
-                fixcm=False,
-                rng=rng
+            atoms,
+            timestep=20 * fs,
+            temperature_K=300,
+            friction=1e-3,
+            logfile='-',
+            loginterval=500,
+            fixcm=False,
+            rng=rng,
         ) as md:
             fx = FixRotation(atoms)
             md.attach(fx)
@@ -59,5 +59,5 @@ def test_fixrotation_asap(asap3):
         check_inertia(atoms)
         # Test for issue #977 (it is free to do so here).
         delta = np.linalg.norm(atoms.get_center_of_mass() - com)
-        print("Change in center of mass:", delta)
+        print('Change in center of mass:', delta)
         assert delta < 1e-9
