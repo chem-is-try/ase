@@ -1,4 +1,3 @@
-# fmt: off
 import numpy as np
 import pytest
 
@@ -10,7 +9,7 @@ from ase.md.bussi import Bussi
 
 
 def test_bussi():
-    atoms = bulk("Pt")
+    atoms = bulk('Pt')
     atoms.calc = EMT()
 
     with pytest.raises(ValueError):
@@ -36,7 +35,7 @@ def test_bussi():
 
 
 def test_bussi_transfered_energy_conservation():
-    atoms = bulk("Cu") * (4, 4, 4)
+    atoms = bulk('Cu') * (4, 4, 4)
 
     atoms.calc = EMT()
 
@@ -73,7 +72,7 @@ def test_bussi_paranoia_check():
     The distribution of the kinetic energy should converge
     quickly to the correct one."""
 
-    atoms = bulk("Cu") * (3, 3, 3)
+    atoms = bulk('Cu') * (3, 3, 3)
 
     atoms.calc = EMT()
 
@@ -98,7 +97,7 @@ def test_bussi_paranoia_check():
 def test_bussi_paranoia_check2():
     """We test even DOF"""
 
-    atoms = bulk("Cu") * (4, 4, 4)
+    atoms = bulk('Cu') * (4, 4, 4)
 
     atoms.calc = EMT()
 
