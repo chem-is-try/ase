@@ -6,14 +6,13 @@ atoms according to a Maxwell-Boltzmann distribution at a given
 temperature.
 """
 
-import warnings
 from typing import Literal
 
 import numpy as np
 
 from ase import Atoms, units
 from ase.md.md import process_temperature
-from ase.parallel import DummyMPI, world
+from ase.parallel import world
 from ase.utils import deprecated
 
 # define a ``zero'' temperature to avoid divisions by zero
@@ -101,7 +100,6 @@ def MaxwellBoltzmannDistribution(
     *,
     temperature_K: float,
     comm=world,
-    communicator=None,
     force_temp: bool = False,
     rng=None,
 ):
@@ -126,11 +124,9 @@ def MaxwellBoltzmannDistribution(
 
         .. versionadded:: 3.26.0
 
-    communicator
+        .. versionremoved:: 3.29.0
 
-        .. deprecated:: 3.26.0
-
-           To be removed in ASE 3.27.0 in favor of ``comm``.
+           ``communicator`` has been removed in favor of ``comm``.
 
     force_temp: bool (optional, default: False)
         If True, the random momenta are rescaled so the kinetic energy is
@@ -143,20 +139,6 @@ def MaxwellBoltzmannDistribution(
         supply a random seed like ``rng=numpy.random.RandomState(seed)``, where
         seed is an integer.
     """
-    if communicator is not None:
-        msg = (
-            '`communicator` has been deprecated since ASE 3.26.0 '
-            'and will be removed in ASE 3.27.0. Use `comm` instead.'
-        )
-        warnings.warn(msg, FutureWarning)
-        comm = communicator
-    if comm == 'serial':
-        msg = (
-            '`comm=="serial"` has been deprecated since ASE 3.26.0 '
-            'and will be removed in ASE 3.27.0. Use `comm=DummyMPI()` instead.'
-        )
-        warnings.warn(msg, FutureWarning)
-        comm = DummyMPI()
     thermalize_momenta(
         atoms,
         temperature_K,
