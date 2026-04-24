@@ -104,6 +104,7 @@ select = [
     'E',      # pycodestyle
     'W',      # pycodestyle
     'I',      # isort
+    'C90',    # maximum mccabe complexity
     'D406',   # missing-new-line-after-section-name
     'D407',   # missing-dashed-underline-after-section
     'UP',     # pyupgrade
@@ -113,6 +114,9 @@ ignore = [
     'E741',   # ambiguous-variable-name
     'W505',   # doc-line-too-long
 ]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 50
 
 [tool.ruff.lint.per-file-ignores]
 "!doc/tutorials/**.py" = ["UP"]  # Only pyupgrade tutorials (for now)
