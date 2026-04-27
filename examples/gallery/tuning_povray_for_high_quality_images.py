@@ -4,7 +4,6 @@ Fine tuning POV-Ray settings for high quality images
 
 """
 
-
 # This script creates pictures of sample structures, the cut sqs cell will keep
 # the same crystallographic orientation in the image as the unit cell
 from ase import build
