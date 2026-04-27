@@ -20,4 +20,3 @@ for name in ['al', 'mg', 'fe', 'diamond', 'nacl', 'rutile', 'skutterudite']:
         ),
     )
     renderer.render()
-
