@@ -42,10 +42,3 @@ Pretty pictures
 :download:`cosb3.py <../ase/spacegroup/spacegroup-cosb3.py>`
 
 
-Fine tuning POV-Ray settings for high quality images
-====================================================
-
-.. image:: sqs_cell.png
-   :width: 10cm
-
-:download:`tuning_povray_for_high_quality_images.py`
