@@ -1,7 +1,14 @@
-from ase.io import write
-from ase.build import bulk
+"""
+
+Isosurface with povray
+======================
+
+"""
+
 import numpy as np
 
+from ase.build import bulk
+from ase.io import write
 
 spin_cut_off = 0.4
 density_cut_off = 0.15
