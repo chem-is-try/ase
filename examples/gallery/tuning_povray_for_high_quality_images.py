@@ -48,7 +48,7 @@ kwargs = {
     # 'image_plane'  : None,  # Distance from front atom to image plane
     #                        # (focal depth for perspective)
     # 'camera_dist'  : 170.0,   # Distance from camera to front atom,
-    # 'camera_type': 'orthographic angle 35',  # 'perspective angle 20', 
+    # 'camera_type': 'orthographic angle 35',  # 'perspective angle 20',
     #                                          ultra_wide_angle
     # 'area_light'   : [(2., 3., 40.) ,# location
     #                  'White',       # color
@@ -56,7 +56,7 @@ kwargs = {
     # 'point_lights' : [],             # [[loc1, color1], [loc2, color2],...]
     # 'background'   : 'White',        # color
     'depth_cueing': False,
-    'celllinewidth': 0.01, # Radius of the cylinders representing the cell
+    'celllinewidth': 0.01,  # Radius of the cylinders representing the cell
 }
 
 # generic projection settings (passed to plotting variables)
