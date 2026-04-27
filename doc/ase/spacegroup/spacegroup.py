@@ -21,4 +21,3 @@ for name in ['al', 'mg', 'fe', 'diamond', 'nacl', 'rutile', 'skutterudite']:
     )
     renderer.render()
 
-runpy.run_path('spacegroup-cosb3.py')
