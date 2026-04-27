@@ -49,6 +49,7 @@ kwargs = {
     # 'camera_type': 'orthographic angle 35',  # 'perspective angle 20'
     # 'area_light' : [(-1.0, -1.0, 200.), 'White', 22.0, 102.0, 20, 2],
     'depth_cueing': False,
+    'celllinewidth': 0.01,
 }
 # some more options:
 # 'image_plane'  : None,  # Distance from front atom to image plane
