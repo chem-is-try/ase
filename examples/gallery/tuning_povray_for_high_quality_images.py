@@ -45,22 +45,19 @@ kwargs = {
     'canvas_height': 720,  # Height of canvas in pixels
     # 'image_height' : 22,
     # 'image_width'  : 102, # I think these are in atomic units
+    # 'image_plane'  : None,  # Distance from front atom to image plane
+    #                        # (focal depth for perspective)
     # 'camera_dist'  : 170.0,   # Distance from camera to front atom,
-    # 'camera_type': 'orthographic angle 35',  # 'perspective angle 20'
-    # 'area_light' : [(-1.0, -1.0, 200.), 'White', 22.0, 102.0, 20, 2],
+    # 'camera_type': 'orthographic angle 35',  # 'perspective angle 20', 
+    #                                          ultra_wide_angle
+    # 'area_light'   : [(2., 3., 40.) ,# location
+    #                  'White',       # color
+    #                  .7, .7, 3, 3], # width, height, Nlamps_x, Nlamps_y
+    # 'point_lights' : [],             # [[loc1, color1], [loc2, color2],...]
+    # 'background'   : 'White',        # color
     'depth_cueing': False,
-    'celllinewidth': 0.01,
+    'celllinewidth': 0.01, # Radius of the cylinders representing the cell
 }
-# some more options:
-# 'image_plane'  : None,  # Distance from front atom to image plane
-#                        # (focal depth for perspective)
-# 'camera_type'  : 'perspective', # perspective, ultra_wide_angle
-# 'point_lights' : [],             # [[loc1, color1], [loc2, color2],...]
-# 'area_light'   : [(2., 3., 40.) ,# location
-#                  'White',       # color
-#                  .7, .7, 3, 3], # width, height, Nlamps_x, Nlamps_y
-# 'background'   : 'White',        # color
-# 'celllinewidth': 0.05, # Radius of the cylinders representing the cell
 
 # generic projection settings (passed to plotting variables)
 generic_projection_settings = {
