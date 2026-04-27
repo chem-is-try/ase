@@ -6,8 +6,7 @@ Isosurface with povray
 """
 
 # %%
-#Render an isosurface and atoms with povray
-# %%
+# Render an isosurface and atoms with povray
 
 import numpy as np
 
