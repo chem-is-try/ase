@@ -5,7 +5,6 @@ POV-Ray rendered crystal structure
 
 """
 
-
 import ase.io as io
 from ase.build import cut
 from ase.spacegroup import crystal
