@@ -29,6 +29,7 @@ by specifying 6 layers in the (100) directions, 9 in the (110) directions and
 
 .. |culayer| image:: culayer.png
 
+To visualize clusters and nanoparticles, see :ref:`gallery_nanoparticle`.
 
 Wulff construction
 ------------------
