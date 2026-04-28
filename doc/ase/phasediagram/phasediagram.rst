@@ -52,7 +52,7 @@ Alternatively, one could have used ``pd.decompose(Cu=3, Au=1)``.
 .. automethod:: PhaseDiagram.decompose
 
 Examples with three components using ``dims=2`` and ``dims=3``
-can be found at ref:`gallery_phase_diagram`. 
+can be found at :ref:`gallery_phase_diagram`. 
 
 
 Pourbaix diagrams
