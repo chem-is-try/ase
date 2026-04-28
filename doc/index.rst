@@ -207,7 +207,6 @@ Contents
     ase/gui/gui
     ase/ase
     tips
-    gallery/gallery
     releasenotes
     contact
     ecosystem
