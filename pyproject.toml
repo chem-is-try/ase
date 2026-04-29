@@ -122,6 +122,7 @@ max-complexity = 50
 "!doc/tutorials/**.py" = ["UP"]  # Only pyupgrade tutorials (for now)
 "examples/tutorials/*.py" = ["E402"]
 "examples/gettingstarted/*.py" = ["E402"]
+"examples/**_prerequisites.py"= ["F401"]
 
 [tool.ruff.lint.pycodestyle]
 max-line-length = 80

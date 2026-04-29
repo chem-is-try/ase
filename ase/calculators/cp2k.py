@@ -218,6 +218,8 @@ class CP2K(Calculator, AbstractContextManager):
             self.command = command
         elif CP2K.command is not None:
             self.command = CP2K.command
+        elif cfg.parser.get('cp2k', 'cp2k_shell', fallback=None):
+            self.command = cfg.parser.get('cp2k', 'cp2k_shell')
         else:
             self.command = cfg.get('ASE_CP2K_COMMAND', 'cp2k_shell')
 
