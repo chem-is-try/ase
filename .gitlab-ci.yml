@@ -105,6 +105,7 @@ calculators-lite:
   before_script:
     - pip install --upgrade pytest-cov>=7.0.0 coverage>=7.10.6
     - pip install --no-deps --editable .
+    - sed 's/binary = /command = /' -i /home/ase/aseconfig.ini
     - export ASE_CONFIG_PATH=/home/ase/aseconfig.ini
   script:
     - >
@@ -138,6 +139,7 @@ calculators:
   before_script:
     - pip install --no-deps --editable .
     - pip install --upgrade pytest-cov>=7.0.0 coverage>=7.10.6
+    - sed 's/binary = /command = /' -i /home/ase/aseconfig.ini
     - export ASE_CONFIG_PATH=/home/ase/aseconfig.ini
     - ase info --calculators
   script:
