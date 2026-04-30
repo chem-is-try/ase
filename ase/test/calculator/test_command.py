@@ -210,6 +210,8 @@ def get_expected_command(command, name, tmp_path, from_envvar):
 
 @pytest.mark.parametrize('name', list(envvars))
 def test_envvar_command(monkeypatch, name, tmp_path):
+    from ase.config import Config, cfg
+
     command = 'dummy shell command from environment'
 
     if name == 'cp2k':
@@ -218,6 +220,8 @@ def test_envvar_command(monkeypatch, name, tmp_path):
     expected_command = get_expected_command(
         command, name, tmp_path, from_envvar=True
     )
+    new_cfg = Config()
+    monkeypatch.setattr(cfg, 'parser', new_cfg.parser)
     monkeypatch.setenv(envvars[name], command)
     actual_command = intercept_command(name)
     assert actual_command == expected_command
