@@ -13,6 +13,7 @@ from contextlib import ExitStack, contextmanager
 from importlib import import_module
 from math import atan2, cos, degrees, gcd, radians, sin
 from pathlib import Path, PurePath
+from types import ModuleType
 
 import numpy as np
 
@@ -372,14 +373,16 @@ class OpenLock:
         pass
 
 
-def search_current_git_hash(arg, world=None):
+def search_current_git_hash(
+    arg: str | Path | ModuleType, world=None
+) -> None | str:
     """Search for .git directory and current git commit hash.
 
     Parameters
     ----------
 
-    arg: str (directory path) or python module
-        .git directory is searched from the parent directory of
+    arg: path str, path object or python module
+        .git directory is searched from the ancestor directory of
         the given directory or module.
     """
     if world is None:
@@ -388,38 +391,44 @@ def search_current_git_hash(arg, world=None):
         return None
 
     # Check argument
-    if isinstance(arg, str):
-        # Directory path
-        dpath = arg
+    if isinstance(arg, ModuleType):
+        # arg is a module object
+        fpath = getattr(arg, '__file__', None)
+        if not fpath:
+            return None
+        # in case this is just symlinked into $PYTHONPATH
+        search_path = Path(fpath).resolve()
+    elif isinstance(arg, (str, Path)):
+        # arg is a path str or path object
+        search_path = Path(arg).resolve()
     else:
-        # Assume arg is module
-        dpath = os.path.dirname(arg.__file__)
-    # dpath = os.path.abspath(dpath)
-    # in case this is just symlinked into $PYTHONPATH
-    dpath = os.path.realpath(dpath)
-    dpath = os.path.dirname(dpath)  # Go to the parent directory
-    git_dpath = os.path.join(dpath, '.git')
-    if not os.path.isdir(git_dpath):
-        # Replace this 'if' with a loop if you want to check
-        # further parent directories
+        raise TypeError('arg must be a path str, path object or python module')
+
+    while not (search_path / '.git').is_dir():
+        # reach at the root directory before finding .git directory
+        if search_path == search_path.parent:
+            return None
+        search_path = search_path.parent
+
+    git_dpath = search_path / '.git'
+
+    HEAD_file = git_dpath / 'HEAD'
+    if not HEAD_file.is_file():
         return None
-    HEAD_file = os.path.join(git_dpath, 'HEAD')
-    if not os.path.isfile(HEAD_file):
-        return None
-    with open(HEAD_file) as fd:
-        line = fd.readline().strip()
-    if line.startswith('ref: '):
-        ref = line[5:]
-        ref_file = os.path.join(git_dpath, ref)
+    head_line = HEAD_file.read_text(encoding='utf-8').strip()
+    if head_line.startswith('ref: '):
+        ref = head_line[5:]
+        ref_file = git_dpath / ref
     else:
         # Assuming detached HEAD state
         ref_file = HEAD_file
-    if not os.path.isfile(ref_file):
+
+    if not ref_file.is_file():
         return None
-    with open(ref_file) as fd:
-        line = fd.readline().strip()
-    if all(c in string.hexdigits for c in line):
-        return line
+    commit_hash = ref_file.read_text(encoding='utf-8').strip()
+
+    if all(c in string.hexdigits for c in commit_hash):
+        return commit_hash
     return None
 
 
