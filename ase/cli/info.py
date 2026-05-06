@@ -85,7 +85,7 @@ def print_info():
     from ase.dependencies import all_dependencies
 
     versions = [('platform', platform.platform()),
-                ('python-' + sys.version.split()[0], sys.executable)]
+                (f'python-{platform.python_version()}', sys.executable)]
 
     for name, path in versions + all_dependencies():
         print(f'{name:24} {path}')
