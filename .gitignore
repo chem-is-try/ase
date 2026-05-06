@@ -47,3 +47,5 @@ sg_execution_times.rst
 #
 examples/*.csv
 examples/*.json
+
+learn.py
