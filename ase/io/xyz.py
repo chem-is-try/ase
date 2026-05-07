@@ -35,12 +35,14 @@ def read_xyz(fileobj, index):
 
 def write_xyz(fileobj, images, comment='', fmt='%22.15f'):
     comment = validate_comment_line(comment)
+    if fmt.startswith('%'):
+        fmt = fmt[1:]
 
     for atoms in images:
         natoms = len(atoms)
-        fileobj.write('%d\n%s\n' % (natoms, comment))
+        fileobj.write(f'{natoms}\n{comment}\n')
         for s, (x, y, z) in zip(atoms.symbols, atoms.positions):
-            fileobj.write('%-2s %s %s %s\n' % (s, fmt % x, fmt % y, fmt % z))
+            fileobj.write(f'{s:<2} {x:{fmt}} {y:{fmt}} {z:{fmt}}\n')
 
 
 # Compatibility with older releases
