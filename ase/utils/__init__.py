@@ -180,8 +180,8 @@ def plural(n, word):
     ('0 eggs', '1 egg', '2 eggs')
     """
     if n == 1:
-        return '1 ' + word
-    return '%d %ss' % (n, word)
+        return f'1 {word}'
+    return f'{n} {word}s'
 
 
 class DevNull:
